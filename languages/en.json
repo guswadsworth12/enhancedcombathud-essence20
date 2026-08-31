@@ -6,6 +6,17 @@
     "Drawer": {
       "Title": "Essences and Skills"
     },
+    "Stats": {
+      "Health": "HP",
+      "toughness": "Toughness",
+      "evasion": "Evasion",
+      "willpower": "Willpower",
+      "cleverness": "Cleverness",
+      "strength": "Strength",
+      "speed": "Speed",
+      "smarts": "Smarts",
+      "social": "Social"
+    },
     "Errors": {
       "ArgonRegistration": "Argon - Combat HUD (ESSENCE20) could not register with Argon Core. Check the browser console for details.",
       "FoundryVersion": "Argon - Combat HUD (ESSENCE20) requires Foundry 14; detected {version}. Disable the adapter or use a supported Foundry version.",

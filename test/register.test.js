@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { registerEssence20Hud } from "../scripts/register.js";
+import { rangerFixture } from "./fixtures/actors.js";
 
 class BaseComponent {}
 
@@ -38,4 +39,19 @@ test("fails clearly when the Argon adapter API is unavailable", () => {
     () => registerEssence20Hud({}),
     /did not expose its adapter API/
   );
+});
+
+test("portrait stat blocks use normalized Essence20 vitals and defenses", async () => {
+  globalThis.game = { i18n: { localize: (key) => key.split(".").at(-1) } };
+  const components = registerEssence20Hud(fakeCore());
+  const portrait = new components.Essence20PortraitPanel();
+  portrait.actor = rangerFixture;
+
+  const [vitals, essences] = await portrait.getStatBlocks();
+
+  assert.equal(vitals[0].text, "Health 4/5");
+  assert.equal(vitals[1].text, "toughness 14");
+  assert.equal(vitals.length, 5);
+  assert.equal(essences.length, 4);
+  assert.equal(essences[0].text, "strength 4/4");
 });
