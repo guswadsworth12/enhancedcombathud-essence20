@@ -1,6 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 
 const manifest = JSON.parse(await readFile("module.json", "utf8"));
+const packageData = JSON.parse(await readFile("package.json", "utf8"));
 const requiredFiles = [
   ...manifest.esmodules,
   ...manifest.styles,
@@ -21,6 +22,17 @@ if (!manifest.relationships.requires.some(({ id }) => id === "enhancedcombathud"
 
 if (!manifest.relationships.systems.some(({ id }) => id === "essence20")) {
   throw new Error("Essence20 must be the declared system");
+}
+
+if (manifest.version !== packageData.version) {
+  throw new Error("module.json and package.json versions must match");
+}
+
+for (const field of ["manifest", "download"]) {
+  if (!URL.canParse(manifest[field])) throw new Error(`${field} must be an absolute URL`);
+  if (!manifest[field].includes(`/v${manifest.version}/`)) {
+    throw new Error(`${field} must target the current version tag`);
+  }
 }
 
 console.log(`Validated ${manifest.id} ${manifest.version}`);

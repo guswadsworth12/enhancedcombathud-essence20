@@ -7,7 +7,18 @@
       "Title": "Essences and Skills"
     },
     "Errors": {
-      "ArgonRegistration": "Argon - Combat HUD (ESSENCE20) could not register with Argon Core. Check the browser console for details."
+      "ArgonRegistration": "Argon - Combat HUD (ESSENCE20) could not register with Argon Core. Check the browser console for details.",
+      "FoundryVersion": "Argon - Combat HUD (ESSENCE20) requires Foundry 14; detected {version}. Disable the adapter or use a supported Foundry version.",
+      "SystemId": "Argon - Combat HUD (ESSENCE20) requires the Essence20 system; detected {systemId}.",
+      "SystemVersion": "Argon - Combat HUD (ESSENCE20) supports Essence20 5.1.x; detected {version}.",
+      "ArgonInactive": "Argon - Combat HUD (CORE) must be installed and enabled before the Essence20 adapter.",
+      "ArgonVersion": "Argon - Combat HUD (ESSENCE20) supports Argon Core 5.x; detected {version}."
+    },
+    "Settings": {
+      "DebugLogging": {
+        "Name": "Enable debug logging",
+        "Hint": "Write additional Essence20 adapter diagnostics to the browser console."
+      }
     }
   }
 }

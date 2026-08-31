@@ -54,13 +54,22 @@ or proprietary assets must not be redistributed.
 
 ## Phase gate
 
-The Core-patch risk is closed. Phase 1 can proceed after a live install proves
-that the published Argon 5.0.1 artifact loads this scaffold for an owned
-`playerCharacter` or `npc` token. Essence20 5.1 exposes rollable embedded
+The Core-patch risk is closed. A live Foundry 14.367 test proved that published
+Argon 5.0.1 loads this scaffold for an owned `playerCharacter` token and renders
+the custom Essence20 portrait, drawer, and empty action panel. A post-test MCP
+read confirmed that the Actor and Item data remained unchanged. The owner
+accepted this evidence and authorized Phase 1.
+
+Essence20 5.1 exposes rollable embedded
 `weaponEffect` Items linked to weapons by `flags.essence20.parentId`, and its
 public `actor.morph()` helper is the required Morph entry point. These call
 paths still require live-world evidence before actionable HUD controls are
 added.
+
+The first smoke-test build inherited Argon Core's red
+`WeaponSets._onSetChange() is not implemented` base-stub diagnostic. Development
+build `0.1.0-dev.3` registers an adapter-owned no-op weapon-set handler so the
+action-free scaffold no longer falls through to that Core stub.
 
 The verified 5.0.1 artifact is installed locally at
 `FoundryUserData/Data/modules/enhancedcombathud`. The previously present
