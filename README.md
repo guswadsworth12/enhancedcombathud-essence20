@@ -20,15 +20,19 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-Planning and API validation. No implementation has started.
+Phase 0 implementation is in progress. The repository now contains an
+installable Foundry 14 manifest and a minimal Argon registration scaffold. It
+does not yet expose gameplay actions; native Essence20 5.1 roll and Morph call
+paths must be verified before those controls are added.
 
-See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md).
+See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
+[the Phase 0 spike](docs/PHASE_0_SPIKE.md).
 
 ## Target compatibility
 
 - Foundry VTT 14.367
 - Essence20 5.1.0
-- Argon Combat HUD Core 5.x, exact version to be pinned during the API spike
+- Argon Combat HUD Core 5.0.1
 
 This repository is private during initial development.
 
