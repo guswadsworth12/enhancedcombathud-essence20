@@ -56,8 +56,11 @@ or proprietary assets must not be redistributed.
 
 The Core-patch risk is closed. Phase 1 can proceed after a live install proves
 that the published Argon 5.0.1 artifact loads this scaffold for an owned
-`powerRanger` or `npc` token. Native roll and Morph behavior remain separate
-evidence gates before actionable HUD controls are added.
+`playerCharacter` or `npc` token. Essence20 5.1 exposes rollable embedded
+`weaponEffect` Items linked to weapons by `flags.essence20.parentId`, and its
+public `actor.morph()` helper is the required Morph entry point. These call
+paths still require live-world evidence before actionable HUD controls are
+added.
 
 The verified 5.0.1 artifact is installed locally at
 `FoundryUserData/Data/modules/enhancedcombathud`. The previously present

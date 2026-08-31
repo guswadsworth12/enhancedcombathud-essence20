@@ -27,7 +27,7 @@ test("registers the minimum Argon component set without patching Core", () => {
   assert.equal(CoreHUD.registrations.portrait, components.Essence20PortraitPanel);
   assert.equal(CoreHUD.registrations.drawer, components.Essence20DrawerPanel);
   assert.deepEqual(CoreHUD.registrations.main, [components.Essence20ActionsPanel]);
-  assert.deepEqual(CoreHUD.registrations.actorTypes, ["powerRanger", "npc"]);
+  assert.deepEqual(CoreHUD.registrations.actorTypes, ["playerCharacter", "npc"]);
 });
 
 test("fails clearly when the Argon adapter API is unavailable", () => {

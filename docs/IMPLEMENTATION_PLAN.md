@@ -8,9 +8,11 @@ Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, 
 
 - Use Argon's supported system-adapter model rather than imitate or fork its HUD.
 - Keep all Essence20 field access behind adapter classes.
-- Invoke native `actor.rollSkill`, `actor.rollInitiative`, Item roll, and Morph behavior.
-- Support `powerRanger` and `npc` before vehicles and Zords.
-- Treat nested `weaponEffect` records as first-class HUD actions.
+- Invoke native `actor.rollSkill`, `actor.rollInitiative`, Item roll, and `actor.morph()` behavior.
+- Support `playerCharacter` and `npc` before vehicles, Zords, and megaforms.
+- Treat embedded `weaponEffect` Items as first-class HUD actions. Resolve them from
+  `actor.items` by their `flags.essence20.parentId` link to the owning weapon; do
+  not execute the weapon's denormalized `system.items` display cache.
 - Include Morph controls in 1.0.
 - Exclude Story Point controls; the dedicated Story Points module remains authoritative.
 - Keep the repository private during initial development.
@@ -69,7 +71,7 @@ Exit when all 1.0 acceptance criteria pass.
 ## 1.0 acceptance criteria
 
 1. Compatible with Foundry 14.367, Essence20 5.1.0, and the pinned Argon 5.x release.
-2. Opens and switches correctly for `powerRanger` and `npc` actors.
+2. Opens and switches correctly for `playerCharacter` and `npc` actors.
 3. Displays accurate Health, Defenses, Essences, and movement.
 4. Uses native initiative and skill workflows.
 5. Presents every valid nested weapon effect separately and invokes the intended effect.
