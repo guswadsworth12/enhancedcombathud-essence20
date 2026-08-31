@@ -11,11 +11,13 @@ function fakeCore() {
     ARGON: {
       PORTRAIT: { PortraitPanel: BaseComponent },
       DRAWER: { DrawerPanel: BaseComponent },
-      MAIN: { ActionPanel: BaseComponent }
+      MAIN: { ActionPanel: BaseComponent },
+      WeaponSets: BaseComponent
     },
     definePortraitPanel(value) { registrations.portrait = value; },
     defineDrawerPanel(value) { registrations.drawer = value; },
     defineMainPanels(value) { registrations.main = value; },
+    defineWeaponSets(value) { registrations.weaponSets = value; },
     defineSupportedActorTypes(value) { registrations.actorTypes = value; }
   };
 }
@@ -27,6 +29,7 @@ test("registers the minimum Argon component set without patching Core", () => {
   assert.equal(CoreHUD.registrations.portrait, components.Essence20PortraitPanel);
   assert.equal(CoreHUD.registrations.drawer, components.Essence20DrawerPanel);
   assert.deepEqual(CoreHUD.registrations.main, [components.Essence20ActionsPanel]);
+  assert.equal(CoreHUD.registrations.weaponSets, components.Essence20WeaponSets);
   assert.deepEqual(CoreHUD.registrations.actorTypes, ["playerCharacter", "npc"]);
 });
 

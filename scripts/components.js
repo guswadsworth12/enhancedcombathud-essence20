@@ -37,9 +37,14 @@ export function createComponents(ARGON) {
     }
   }
 
+  class Essence20WeaponSets extends ARGON.WeaponSets {
+    async _onSetChange() {}
+  }
+
   return {
     Essence20PortraitPanel,
     Essence20DrawerPanel,
-    Essence20ActionsPanel
+    Essence20ActionsPanel,
+    Essence20WeaponSets
   };
 }

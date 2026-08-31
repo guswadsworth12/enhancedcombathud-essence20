@@ -8,6 +8,7 @@ export function registerEssence20Hud(CoreHUD) {
   CoreHUD.definePortraitPanel(components.Essence20PortraitPanel);
   CoreHUD.defineDrawerPanel(components.Essence20DrawerPanel);
   CoreHUD.defineMainPanels([components.Essence20ActionsPanel]);
+  CoreHUD.defineWeaponSets(components.Essence20WeaponSets);
   CoreHUD.defineSupportedActorTypes([...SUPPORTED_ACTOR_TYPES]);
 
   return components;
