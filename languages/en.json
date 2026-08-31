@@ -1,0 +1,13 @@
+{
+  "ECHESSENCE20": {
+    "Actions": {
+      "Title": "Actions"
+    },
+    "Drawer": {
+      "Title": "Essences and Skills"
+    },
+    "Errors": {
+      "ArgonRegistration": "Argon - Combat HUD (ESSENCE20) could not register with Argon Core. Check the browser console for details."
+    }
+  }
+}
