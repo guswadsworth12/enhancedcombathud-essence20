@@ -6,7 +6,7 @@ The module will expose native Essence20 combat actions through Argon's bottom-sc
 
 ## Initial scope
 
-- Power Ranger and NPC actor support
+- Player Character and NPC actor support
 - Health, Defenses, Essences, movement, and initiative
 - Skills grouped by Essence
 - Weapons with native primary and alternate `weaponEffect` actions
@@ -34,7 +34,8 @@ See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
 - Essence20 5.1.0
 - Argon Combat HUD Core 5.0.1
 
-This repository is private during initial development.
+This repository is public. Development releases are experimental and may not
+be suitable for active campaign sessions.
 
 ## AI development disclosure and risk notice
 
