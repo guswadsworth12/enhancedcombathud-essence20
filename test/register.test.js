@@ -13,6 +13,13 @@ class BaseItemButton {
     this.inActionPanel = options.inActionPanel;
   }
 }
+class BaseButtonPanelButton {}
+class BaseAccordionPanel {
+  constructor(options) { Object.assign(this, options); }
+}
+class BaseAccordionPanelCategory {
+  constructor(options) { Object.assign(this, options); }
+}
 
 function fakeCore() {
   const registrations = {};
@@ -21,7 +28,16 @@ function fakeCore() {
     ARGON: {
       PORTRAIT: { PortraitPanel: BaseComponent },
       DRAWER: { DrawerPanel: BaseComponent, DrawerButton: BaseDrawerButton },
-      MAIN: { ActionPanel: BaseComponent, BUTTONS: { ItemButton: BaseItemButton } },
+      MAIN: {
+        ActionPanel: BaseComponent,
+        BUTTONS: { ItemButton: BaseItemButton, ButtonPanelButton: BaseButtonPanelButton },
+        BUTTON_PANELS: {
+          ACCORDION: {
+            AccordionPanel: BaseAccordionPanel,
+            AccordionPanelCategory: BaseAccordionPanelCategory
+          }
+        }
+      },
       WeaponSets: BaseComponent
     },
     definePortraitPanel(value) { registrations.portrait = value; },
@@ -38,7 +54,10 @@ test("registers the minimum Argon component set without patching Core", () => {
 
   assert.equal(CoreHUD.registrations.portrait, components.Essence20PortraitPanel);
   assert.equal(CoreHUD.registrations.drawer, components.Essence20DrawerPanel);
-  assert.deepEqual(CoreHUD.registrations.main, [components.Essence20ActionsPanel]);
+  assert.deepEqual(CoreHUD.registrations.main, [
+    components.Essence20ActionsPanel,
+    components.Essence20PowersPanel
+  ]);
   assert.equal(CoreHUD.registrations.weaponSets, components.Essence20WeaponSets);
   assert.deepEqual(CoreHUD.registrations.actorTypes, ["playerCharacter", "npc"]);
 });
@@ -138,4 +157,55 @@ test("action panel shows an unmatched effect as disabled and never rolls it", as
   assert.equal(buttons[0].visible, true);
   assert.equal(rolls, 0);
   assert.equal(warning, "ECHESSENCE20.Errors.UnmatchedWeaponEffect");
+});
+
+test("powers accordion groups real action types", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  const power = {
+    ...rangerFixture.items.find(({ type }) => type === "power"),
+    system: {
+      ...rangerFixture.items.find(({ type }) => type === "power").system,
+      canActivate: true
+    }
+  };
+  const actor = { ...rangerFixture, items: [power] };
+  const components = registerEssence20Hud(fakeCore());
+  const powers = new components.Essence20PowersPanel();
+  powers.actor = actor;
+
+  const buttons = await powers._getButtons();
+  buttons[0].actor = actor;
+  const accordion = await buttons[0]._getPanel();
+
+  assert.equal(buttons.length, 1);
+  assert.equal(accordion.id, "essence20-powers");
+  assert.equal(accordion.accordionPanelCategories.length, 1);
+  assert.equal(accordion.accordionPanelCategories[0].label, "ECHESSENCE20.Actions.PowerTypes.standard");
+  assert.equal(accordion.accordionPanelCategories[0].buttons[0].item.name, "Test Power");
+});
+
+test("unavailable powers remain visible but cannot roll", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let warning = null;
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  let rolls = 0;
+  const power = {
+    ...rangerFixture.items.find(({ type }) => type === "power"),
+    roll() { rolls += 1; }
+  };
+  const actor = { ...rangerFixture, items: [power] };
+  const components = registerEssence20Hud(fakeCore());
+  const panel = new components.Essence20PowersPanel();
+  panel.actor = actor;
+
+  const [panelButton] = await panel._getButtons();
+  panelButton.actor = actor;
+  const accordion = await panelButton._getPanel();
+  const [button] = accordion.accordionPanelCategories[0].buttons;
+  button.actor = actor;
+  await button._onLeftClick();
+
+  assert.equal(button.power.canActivate, false);
+  assert.equal(rolls, 0);
+  assert.equal(warning, "ECHESSENCE20.Errors.PowerUnavailable");
 });

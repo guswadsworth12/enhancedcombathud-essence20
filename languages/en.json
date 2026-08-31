@@ -1,7 +1,19 @@
 {
   "ECHESSENCE20": {
     "Actions": {
-      "Title": "Actions"
+      "Title": "Actions",
+      "Weapons": "Weapons",
+      "Powers": "Powers",
+      "PowerTypes": {
+        "free": "Free",
+        "fullAction": "Full Action",
+        "move": "Move",
+        "standard": "Standard",
+        "standardAndMove": "Standard and Move",
+        "wholeTurn": "Whole Turn",
+        "tenMinutes": "Ten Minutes",
+        "oneHour": "One Hour"
+      }
     },
     "Drawer": {
       "Title": "Essences and Skills",
@@ -28,7 +40,8 @@
       "ArgonInactive": "Argon - Combat HUD (CORE) must be installed and enabled before the Essence20 adapter.",
       "ArgonVersion": "Argon - Combat HUD (ESSENCE20) supports Argon Core 5.x; detected {version}.",
       "NotOwner": "You do not have permission to roll for this actor.",
-      "UnmatchedWeaponEffect": "This weapon effect is not linked to a valid weapon and cannot be rolled."
+      "UnmatchedWeaponEffect": "This weapon effect is not linked to a valid weapon and cannot be rolled.",
+      "PowerUnavailable": "This power cannot currently be activated."
     },
     "Settings": {
       "DebugLogging": {

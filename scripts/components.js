@@ -9,6 +9,11 @@ const STAT_COLORS = Object.freeze({
   social: "#a78ac7"
 });
 const REPORTED_DIAGNOSTICS = new Set();
+const POWER_HANDLER_PATH = "/systems/essence20/module/sheet-handlers/power-handler.mjs";
+const POWER_ACTION_TYPES = Object.freeze([
+  "free", "fullAction", "move", "standard", "standardAndMove",
+  "wholeTurn", "tenMinutes", "oneHour"
+]);
 
 function reportDiagnostics(actorId, diagnostics) {
   for (const diagnostic of diagnostics) {
@@ -42,6 +47,17 @@ export function formatSkillStatus(skill) {
   if (skill.edge) status.push("E");
   if (skill.snag) status.push("S");
   return status.join(" ") || "—";
+}
+
+export async function activatePower(actor, power, importer = (path) => import(path)) {
+  let powerCost = null;
+  try {
+    ({ powerCost } = await importer(POWER_HANDLER_PATH));
+  } catch (error) {
+    console.warn("enhancedcombathud-essence20 | Native power handler unavailable; showing power information instead.", error);
+  }
+  if (typeof powerCost === "function") return powerCost(actor, power);
+  return power.roll?.({});
 }
 
 export function createComponents(ARGON) {
@@ -86,6 +102,37 @@ export function createComponents(ARGON) {
 
     _onLeftClick() {
       ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.UnmatchedWeaponEffect"));
+    }
+  }
+
+  class Essence20PowerButton extends ARGON.MAIN.BUTTONS.ItemButton {
+    constructor(power) {
+      super({ item: power.document, inActionPanel: true });
+      this.power = power;
+    }
+
+    get classes() {
+      return this.power.canActivate ? super.classes : [...super.classes, "essence20-disabled-action"];
+    }
+
+    async _onLeftClick() {
+      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+        return;
+      }
+      if (!this.power.canActivate) {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.PowerUnavailable"));
+        return;
+      }
+      return activatePower(this.actor, this.item);
+    }
+
+    async _onRightClick() {
+      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+        return;
+      }
+      return this.item.roll({});
     }
   }
 
@@ -168,7 +215,7 @@ export function createComponents(ARGON) {
     }
 
     get label() {
-      return game.i18n.localize("ECHESSENCE20.Actions.Title");
+      return game.i18n.localize("ECHESSENCE20.Actions.Weapons");
     }
 
     async _getButtons() {
@@ -184,6 +231,49 @@ export function createComponents(ARGON) {
     }
   }
 
+  class Essence20PowersButton extends ARGON.MAIN.BUTTONS.ButtonPanelButton {
+    get label() {
+      return game.i18n.localize("ECHESSENCE20.Actions.Powers");
+    }
+
+    get icon() {
+      return "icons/svg/aura.svg";
+    }
+
+    async _getPanel() {
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      const categories = POWER_ACTION_TYPES.flatMap((actionType) => {
+        const buttons = data.powers
+          .filter((power) => power.actionType === actionType)
+          .map((power) => new Essence20PowerButton(power));
+        if (!buttons.length) return [];
+        return [new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory({
+          label: game.i18n.localize(`ECHESSENCE20.Actions.PowerTypes.${actionType}`),
+          buttons
+        })];
+      });
+      return new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanel({
+        id: "essence20-powers",
+        accordionPanelCategories: categories
+      });
+    }
+  }
+
+  class Essence20PowersPanel extends ARGON.MAIN.ActionPanel {
+    get classes() {
+      return ["actions-container", "essence20-actions-container", "essence20-powers-container"];
+    }
+
+    get label() {
+      return game.i18n.localize("ECHESSENCE20.Actions.Powers");
+    }
+
+    async _getButtons() {
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      return data.powers.length ? [new Essence20PowersButton()] : [];
+    }
+  }
+
   class Essence20WeaponSets extends ARGON.WeaponSets {
     async _onSetChange() {}
   }
@@ -192,6 +282,7 @@ export function createComponents(ARGON) {
     Essence20PortraitPanel,
     Essence20DrawerPanel,
     Essence20ActionsPanel,
+    Essence20PowersPanel,
     Essence20WeaponSets
   };
 }

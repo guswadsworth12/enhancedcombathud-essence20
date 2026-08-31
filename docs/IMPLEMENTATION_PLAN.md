@@ -8,7 +8,8 @@ Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, 
 
 - Use Argon's supported system-adapter model rather than imitate or fork its HUD.
 - Keep all Essence20 field access behind adapter classes.
-- Invoke native `actor.rollSkill`, `actor.rollInitiative`, Item roll, and `actor.morph()` behavior.
+- Invoke native `actor.rollSkill`, `actor.rollInitiative`, weapon-effect Item
+  roll, exported `powerCost(actor, power)`, and `actor.morph()` behavior.
 - Support `playerCharacter` and `npc` before vehicles, Zords, and megaforms.
 - Treat embedded `weaponEffect` Items as first-class HUD actions. Resolve them from
   `actor.items` by their `flags.essence20.parentId` link to the owning weapon; do
@@ -45,6 +46,12 @@ Exit when adapter tests are independent of Argon UI code.
 ### 3. Playable HUD
 
 - Portrait/status area, initiative, skills, weapon effects, powers, utility panels, and enriched tooltips.
+- Group powers by Essence20's real action types: Free, Full Action, Move,
+  Standard, Standard and Move, Whole Turn, Ten Minutes, and One Hour. Use
+  `canActivate` only for sheet-parity visibility/availability; native
+  `powerCost` remains authoritative for resource affordability.
+- Do not invent current-use counters for powers: Essence20 5.1 stores declared
+  use frequency and maximum uses but no consumed-use state.
 - Delegate every executable action to native Essence20 methods.
 
 Exit when a player can complete a basic combat turn without opening the actor sheet.

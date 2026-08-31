@@ -7,7 +7,10 @@ export function registerEssence20Hud(CoreHUD) {
   const components = createComponents(CoreHUD.ARGON);
   CoreHUD.definePortraitPanel(components.Essence20PortraitPanel);
   CoreHUD.defineDrawerPanel(components.Essence20DrawerPanel);
-  CoreHUD.defineMainPanels([components.Essence20ActionsPanel]);
+  CoreHUD.defineMainPanels([
+    components.Essence20ActionsPanel,
+    components.Essence20PowersPanel
+  ]);
   CoreHUD.defineWeaponSets(components.Essence20WeaponSets);
   CoreHUD.defineSupportedActorTypes([...SUPPORTED_ACTOR_TYPES]);
 

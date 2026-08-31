@@ -121,7 +121,7 @@ export function normalizePower(item) {
   const system = item.system ?? {};
   return {
     ...baseItem(item),
-    actionType: system.actionType ?? "special",
+    actionType: system.actionType ?? "free",
     canActivate: Boolean(system.canActivate),
     powerType: system.type ?? null,
     uses: {
