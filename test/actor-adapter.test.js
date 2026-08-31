@@ -16,6 +16,7 @@ test("normalizes a player character independently of Argon UI classes", () => {
   assert.equal(result.defenses.toughness, 14);
   assert.equal(result.movement.ground, 30);
   assert.equal(result.skills[0].specialized, true);
+  assert.equal(result.skills[0].canCritD2, false);
   assert.equal(result.weapons[0].effects[0].id, "effect-1");
   assert.equal(result.weapons[0].effects[0].skill, "finesse");
   assert.equal(result.powers[0].actionType, "standard");

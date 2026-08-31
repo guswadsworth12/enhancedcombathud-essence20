@@ -39,6 +39,7 @@ function normalizeSkills(skills = {}) {
       shiftDown: finiteNumber(skill.shiftDown),
       edge: Boolean(skill.edge),
       snag: Boolean(skill.snag),
+      canCritD2: Boolean(skill.canCritD2),
       specialized: Boolean(skill.isSpecialized),
       initiative: Boolean(skill.canBeInitiative),
       essences: ESSENCES.filter((essence) => Boolean(skill.essences?.[essence]))

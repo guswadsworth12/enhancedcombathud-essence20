@@ -4,7 +4,10 @@
       "Title": "Actions"
     },
     "Drawer": {
-      "Title": "Essences and Skills"
+      "Title": "Essences and Skills",
+      "Skill": "Skill",
+      "Rank": "Rank",
+      "Status": "Spec / Edge / Snag"
     },
     "Stats": {
       "Health": "HP",
@@ -23,7 +26,8 @@
       "SystemId": "Argon - Combat HUD (ESSENCE20) requires the Essence20 system; detected {systemId}.",
       "SystemVersion": "Argon - Combat HUD (ESSENCE20) supports Essence20 5.1.x; detected {version}.",
       "ArgonInactive": "Argon - Combat HUD (CORE) must be installed and enabled before the Essence20 adapter.",
-      "ArgonVersion": "Argon - Combat HUD (ESSENCE20) supports Argon Core 5.x; detected {version}."
+      "ArgonVersion": "Argon - Combat HUD (ESSENCE20) supports Argon Core 5.x; detected {version}.",
+      "NotOwner": "You do not have permission to roll for this actor."
     },
     "Settings": {
       "DebugLogging": {

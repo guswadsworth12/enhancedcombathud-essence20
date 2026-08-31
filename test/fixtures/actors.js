@@ -6,6 +6,7 @@ function skill(essence, shift = "d2", specialized = false) {
     shiftDown: 0,
     edge: false,
     snag: false,
+    canCritD2: false,
     isSpecialized: specialized,
     canBeInitiative: false,
     essences: { [essence]: true }

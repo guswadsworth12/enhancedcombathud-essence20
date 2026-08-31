@@ -4,6 +4,9 @@ import { registerEssence20Hud } from "../scripts/register.js";
 import { rangerFixture } from "./fixtures/actors.js";
 
 class BaseComponent {}
+class BaseDrawerButton {
+  constructor(buttons) { this.buttons = buttons; }
+}
 
 function fakeCore() {
   const registrations = {};
@@ -11,7 +14,7 @@ function fakeCore() {
     registrations,
     ARGON: {
       PORTRAIT: { PortraitPanel: BaseComponent },
-      DRAWER: { DrawerPanel: BaseComponent },
+      DRAWER: { DrawerPanel: BaseComponent, DrawerButton: BaseDrawerButton },
       MAIN: { ActionPanel: BaseComponent },
       WeaponSets: BaseComponent
     },
@@ -54,4 +57,30 @@ test("portrait stat blocks use normalized Essence20 vitals and defenses", async 
   assert.equal(vitals.length, 5);
   assert.equal(essences.length, 4);
   assert.equal(essences[0].text, "strength 4/4");
+});
+
+test("skill drawer delegates owned rolls to the native actor method", () => {
+  globalThis.CONFIG = { E20: { skills: { athletics: "Athletics" } } };
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let dataset = null;
+  const components = registerEssence20Hud(fakeCore());
+  const drawer = new components.Essence20DrawerPanel();
+  drawer.actor = {
+    ...rangerFixture,
+    rollSkill(value) { dataset = value; }
+  };
+
+  const [category] = drawer.categories;
+  category.buttons[0].buttons[0].onClick();
+
+  assert.equal(category.buttons.length, 2);
+  assert.deepEqual(dataset, {
+    skill: "athletics",
+    essence: "strength",
+    shift: "d4",
+    shiftUp: 0,
+    shiftDown: 0,
+    isSpecialized: true,
+    canCritD2: false
+  });
 });

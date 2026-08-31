@@ -9,7 +9,34 @@ const STAT_COLORS = Object.freeze({
   social: "#a78ac7"
 });
 
+export function buildSkillRollDataset(skill) {
+  return {
+    skill: skill.key,
+    essence: skill.essences[0] ?? "",
+    shift: skill.shift,
+    shiftUp: skill.shiftUp,
+    shiftDown: skill.shiftDown,
+    isSpecialized: skill.specialized,
+    canCritD2: skill.canCritD2
+  };
+}
+
+export function formatSkillRank(skill) {
+  const modifier = skill.modifier > 0 ? ` +${skill.modifier}` : "";
+  return `${skill.shift}${modifier}`;
+}
+
+export function formatSkillStatus(skill) {
+  const status = [];
+  if (skill.specialized) status.push("★");
+  if (skill.edge) status.push("E");
+  if (skill.snag) status.push("S");
+  return status.join(" ") || "—";
+}
+
 export function createComponents(ARGON) {
+  class Essence20SkillButton extends ARGON.DRAWER.DrawerButton {}
+
   class Essence20PortraitPanel extends ARGON.PORTRAIT.PortraitPanel {
     get classes() {
       return ["portrait-hud", "essence20-portrait-hud"];
@@ -51,7 +78,35 @@ export function createComponents(ARGON) {
     }
 
     get categories() {
-      return [];
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      const skillName = (key) => {
+        const configured = globalThis.CONFIG?.E20?.skills?.[key];
+        return configured ? game.i18n.localize(configured) : key;
+      };
+      const buttons = data.skills.map((skill) => new Essence20SkillButton([
+        {
+          label: skillName(skill.key),
+          onClick: () => {
+            if (!this.actor.isOwner || typeof this.actor.rollSkill !== "function") {
+              ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+              return;
+            }
+            return this.actor.rollSkill(buildSkillRollDataset(skill));
+          }
+        },
+        { label: formatSkillRank(skill) },
+        { label: formatSkillStatus(skill) }
+      ]));
+
+      return [{
+        captions: [
+          { label: "ECHESSENCE20.Drawer.Skill", align: "left" },
+          { label: "ECHESSENCE20.Drawer.Rank", align: "center" },
+          { label: "ECHESSENCE20.Drawer.Status", align: "center" }
+        ],
+        buttons,
+        gridCols: "minmax(9rem, 1fr) 4rem 4rem"
+      }];
     }
   }
 
