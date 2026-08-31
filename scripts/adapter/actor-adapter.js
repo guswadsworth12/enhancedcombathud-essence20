@@ -3,7 +3,8 @@ import {
   isUtilityItem,
   normalizePower,
   normalizeUtilityItem,
-  normalizeWeapon
+  normalizeWeapon,
+  normalizeWeaponEffect
 } from "./item-adapter.js";
 
 const DEFENSES = ["toughness", "evasion", "willpower", "cleverness"];
@@ -55,6 +56,19 @@ export class Essence20ActorAdapter {
     const actor = this.actor;
     const system = actor.system ?? {};
     const items = collectionValues(actor.items);
+    const claimedEffectIds = new Set();
+    const weapons = items.filter(({ type }) => type === "weapon")
+      .map((item) => normalizeWeapon(item, items, claimedEffectIds));
+    const unmatchedWeaponEffects = items
+      .filter((item) => item.type === "weaponEffect" && !claimedEffectIds.has(item.id ?? item._id))
+      .map((item) => ({ ...normalizeWeaponEffect(item), disabled: true }));
+    const diagnostics = [
+      ...weapons.flatMap((weapon) => weapon.diagnostics),
+      ...unmatchedWeaponEffects.map((effect) => ({
+        key: `unmatched:${effect.id}`,
+        message: `Weapon effect ${effect.name || effect.id} is not linked to a weapon.`
+      }))
+    ];
 
     return {
       identity: {
@@ -80,15 +94,15 @@ export class Essence20ActorAdapter {
         formula: system.initiative?.formula ?? null
       },
       skills: normalizeSkills(system.skills),
-      weapons: items.filter(({ type }) => type === "weapon")
-        .map((item) => normalizeWeapon(item, items)),
+      weapons,
+      unmatchedWeaponEffects,
+      diagnostics,
       powers: items.filter(({ type }) => type === "power").map(normalizePower),
       utility: items.filter(isUtilityItem).map(normalizeUtilityItem),
       morph: {
         capable: Boolean(system.canMorph),
         active: Boolean(system.isMorphed),
-        actionAvailable: actor.type === "playerCharacter"
-          && Boolean(system.canMorph)
+        actionAvailable: Boolean(system.canMorph)
           && typeof actor.morph === "function"
       }
     };

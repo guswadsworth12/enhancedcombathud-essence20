@@ -7,6 +7,12 @@ class BaseComponent {}
 class BaseDrawerButton {
   constructor(buttons) { this.buttons = buttons; }
 }
+class BaseItemButton {
+  constructor(options) {
+    this.item = options.item;
+    this.inActionPanel = options.inActionPanel;
+  }
+}
 
 function fakeCore() {
   const registrations = {};
@@ -15,7 +21,7 @@ function fakeCore() {
     ARGON: {
       PORTRAIT: { PortraitPanel: BaseComponent },
       DRAWER: { DrawerPanel: BaseComponent, DrawerButton: BaseDrawerButton },
-      MAIN: { ActionPanel: BaseComponent },
+      MAIN: { ActionPanel: BaseComponent, BUTTONS: { ItemButton: BaseItemButton } },
       WeaponSets: BaseComponent
     },
     definePortraitPanel(value) { registrations.portrait = value; },
@@ -83,4 +89,53 @@ test("skill drawer delegates owned rolls to the native actor method", () => {
     isSpecialized: true,
     canCritD2: false
   });
+});
+
+test("action panel exposes equipped live weapon effects", async () => {
+  let rolledWith = null;
+  const effect = {
+    ...rangerFixture.items.find(({ type }) => type === "weaponEffect"),
+    roll(dataset) { rolledWith = dataset; }
+  };
+  const actor = {
+    ...rangerFixture,
+    items: rangerFixture.items.map((item) => item.type === "weaponEffect" ? effect : item)
+  };
+  const components = registerEssence20Hud(fakeCore());
+  const panel = new components.Essence20ActionsPanel();
+  panel.actor = actor;
+
+  const buttons = await panel._getButtons();
+  buttons[0].actor = actor;
+  await buttons[0]._onLeftClick();
+
+  assert.equal(buttons.length, 1);
+  assert.equal(buttons[0].item.id, "effect-1");
+  assert.equal(buttons[0].inActionPanel, true);
+  assert.deepEqual(buttons[0].ranges, { normal: null, long: null });
+  assert.equal(buttons[0].targets, 1);
+  assert.deepEqual(rolledWith, {});
+});
+
+test("action panel shows an unmatched effect as disabled and never rolls it", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let warning = null;
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  let rolls = 0;
+  const orphan = {
+    id: "orphan", name: "Orphan", type: "weaponEffect", flags: {}, system: {},
+    roll() { rolls += 1; }
+  };
+  const actor = { ...rangerFixture, items: [orphan] };
+  const components = registerEssence20Hud(fakeCore());
+  const panel = new components.Essence20ActionsPanel();
+  panel.actor = actor;
+
+  const buttons = await panel._getButtons();
+  buttons[0]._onLeftClick();
+
+  assert.equal(buttons.length, 1);
+  assert.equal(buttons[0].visible, true);
+  assert.equal(rolls, 0);
+  assert.equal(warning, "ECHESSENCE20.Errors.UnmatchedWeaponEffect");
 });

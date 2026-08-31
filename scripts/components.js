@@ -8,6 +8,16 @@ const STAT_COLORS = Object.freeze({
   smarts: "#6fb8c9",
   social: "#a78ac7"
 });
+const REPORTED_DIAGNOSTICS = new Set();
+
+function reportDiagnostics(actorId, diagnostics) {
+  for (const diagnostic of diagnostics) {
+    const key = `${actorId}:${diagnostic.key}`;
+    if (REPORTED_DIAGNOSTICS.has(key)) continue;
+    REPORTED_DIAGNOSTICS.add(key);
+    console.warn(`enhancedcombathud-essence20 | ${diagnostic.message}`);
+  }
+}
 
 export function buildSkillRollDataset(skill) {
   return {
@@ -36,6 +46,48 @@ export function formatSkillStatus(skill) {
 
 export function createComponents(ARGON) {
   class Essence20SkillButton extends ARGON.DRAWER.DrawerButton {}
+
+  class Essence20WeaponEffectButton extends ARGON.MAIN.BUTTONS.ItemButton {
+    constructor(effect) {
+      super({ item: effect.document, inActionPanel: true });
+      this.effect = effect;
+    }
+
+    get ranges() {
+      return {
+        normal: this.effect.range.normal,
+        long: this.effect.range.long
+      };
+    }
+
+    get targets() {
+      return this.effect.targets;
+    }
+
+    async _onLeftClick() {
+      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+        return;
+      }
+      return this.item.roll({});
+    }
+  }
+
+  class Essence20DisabledEffectButton extends ARGON.MAIN.BUTTONS.ItemButton {
+    constructor(effect) {
+      super({ item: effect.document, inActionPanel: true });
+      this.effect = effect;
+    }
+
+    get label() { return this.effect.name; }
+    get icon() { return this.effect.img; }
+    get visible() { return true; }
+    get classes() { return ["essence20-disabled-action"]; }
+
+    _onLeftClick() {
+      ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.UnmatchedWeaponEffect"));
+    }
+  }
 
   class Essence20PortraitPanel extends ARGON.PORTRAIT.PortraitPanel {
     get classes() {
@@ -120,7 +172,15 @@ export function createComponents(ARGON) {
     }
 
     async _getButtons() {
-      return [];
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      reportDiagnostics(data.identity.id, data.diagnostics);
+      const effects = data.weapons
+        .filter((weapon) => weapon.equipped)
+        .flatMap((weapon) => weapon.effects)
+        .concat(data.unmatchedWeaponEffects);
+      return effects.map((effect) => effect.disabled
+        ? new Essence20DisabledEffectButton(effect)
+        : new Essence20WeaponEffectButton(effect));
     }
   }
 
