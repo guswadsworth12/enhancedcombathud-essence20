@@ -109,10 +109,7 @@ export function createComponents(ARGON) {
     constructor(power) {
       super({ item: power.document, inActionPanel: true });
       this.power = power;
-    }
-
-    get classes() {
-      return this.power.canActivate ? super.classes : [...super.classes, "essence20-disabled-action"];
+      if (!power.canActivate) this.element.classList.add("essence20-disabled-action");
     }
 
     async _onLeftClick() {

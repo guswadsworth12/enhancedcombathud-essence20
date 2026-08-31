@@ -9,9 +9,12 @@ class BaseDrawerButton {
 }
 class BaseItemButton {
   constructor(options) {
+    this.initialClasses = this.classes;
     this.item = options.item;
     this.inActionPanel = options.inActionPanel;
+    this.element = { classList: { add() {} } };
   }
+  get classes() { return ["feature-element"]; }
 }
 class BaseButtonPanelButton {}
 class BaseAccordionPanel {
