@@ -20,11 +20,12 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-Phase 0 is complete: the adapter opened Argon for a live Essence20 5.1
-`playerCharacter` token without changing Actor or Item data. Phase 1 adds
-runtime compatibility guards, localized diagnostics, client debug logging,
-package validation, and a documented development workflow. Gameplay actions
-and the Rangers Occult theme are not implemented yet.
+Phases 0 and 1 are complete: the adapter opens Argon for a live Essence20 5.1
+`playerCharacter` token, preserves Actor and Item data, and provides runtime
+compatibility guards, localized diagnostics, client debug logging, package
+validation, and a documented development workflow. Phase 2 is building a pure
+normalized actor/item data layer with sanitized fixtures. Gameplay actions and
+the Rangers Occult theme are not implemented yet.
 
 See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
 [the Phase 0 spike](docs/PHASE_0_SPIKE.md). Development and release procedures
