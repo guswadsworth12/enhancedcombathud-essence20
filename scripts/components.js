@@ -60,6 +60,14 @@ export async function rollInitiative(actor) {
   return actor.rollInitiative({ createCombatants: true });
 }
 
+export async function toggleMorph(actor) {
+  if (!actor?.isOwner || typeof actor.morph !== "function") {
+    ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+    return;
+  }
+  return actor.morph();
+}
+
 export async function activatePower(actor, power, importer = (path) => import(path)) {
   let powerCost = null;
   try {
@@ -414,11 +422,22 @@ export function createComponents(ARGON) {
 
   class Essence20ButtonHud extends ARGON.ButtonHud {
     async _getButtons() {
-      return [{
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      const buttons = [{
         label: "ECHESSENCE20.Actions.Initiative",
         icon: "fa-solid fa-hourglass-start",
         onClick: () => rollInitiative(this.actor)
       }];
+      if (data.morph.actionAvailable) buttons.push({
+        label: data.morph.active
+          ? "ECHESSENCE20.Actions.Return"
+          : "ECHESSENCE20.Actions.Morph",
+        icon: data.morph.active
+          ? "fa-solid fa-rotate-left"
+          : "fa-solid fa-person-rays",
+        onClick: () => toggleMorph(this.actor)
+      });
+      return buttons;
     }
   }
 

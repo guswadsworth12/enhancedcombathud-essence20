@@ -7,7 +7,8 @@ import {
   formatSkillRank,
   formatSkillStatus,
   rollInitiative,
-  showUtilityInfo
+  showUtilityInfo,
+  toggleMorph
 } from "../scripts/components.js";
 
 const skill = {
@@ -50,6 +51,24 @@ test("initiative refuses non-owner calls", async () => {
   await rollInitiative({ isOwner: false, rollInitiative() { rolls += 1; } });
 
   assert.equal(rolls, 0);
+  assert.equal(warning, "ECHESSENCE20.Errors.NotOwner");
+});
+
+test("Morph delegates to the native owned actor helper", async () => {
+  let calls = 0;
+  await toggleMorph({ isOwner: true, morph() { calls += 1; } });
+  assert.equal(calls, 1);
+});
+
+test("Morph refuses non-owner calls", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let warning = null;
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  let calls = 0;
+
+  await toggleMorph({ isOwner: false, morph() { calls += 1; } });
+
+  assert.equal(calls, 0);
   assert.equal(warning, "ECHESSENCE20.Errors.NotOwner");
 });
 

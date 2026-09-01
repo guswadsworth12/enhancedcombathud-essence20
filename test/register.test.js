@@ -88,6 +88,31 @@ test("button HUD delegates initiative to the native actor workflow", async () =>
   assert.deepEqual(options, { createCombatants: true });
 });
 
+test("button HUD exposes native Morph with state-aware presentation", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let morphCalls = 0;
+  const components = registerEssence20Hud(fakeCore());
+  const hud = new components.Essence20ButtonHud();
+  hud.actor = {
+    ...rangerFixture,
+    system: { ...rangerFixture.system, isMorphed: false },
+    morph() { morphCalls += 1; }
+  };
+
+  const buttons = await hud._getButtons();
+  await buttons[1].onClick();
+
+  assert.equal(buttons.length, 2);
+  assert.equal(buttons[1].label, "ECHESSENCE20.Actions.Morph");
+  assert.equal(buttons[1].icon, "fa-solid fa-person-rays");
+  assert.equal(morphCalls, 1);
+
+  hud.actor.system.isMorphed = true;
+  const morphedButtons = await hud._getButtons();
+  assert.equal(morphedButtons[1].label, "ECHESSENCE20.Actions.Return");
+  assert.equal(morphedButtons[1].icon, "fa-solid fa-rotate-left");
+});
+
 test("fails clearly when the Argon adapter API is unavailable", () => {
   assert.throws(
     () => registerEssence20Hud({}),

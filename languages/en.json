@@ -6,6 +6,8 @@
       "Powers": "Powers",
       "Utilities": "Utility",
       "Initiative": "Initiative",
+      "Morph": "Morph",
+      "Return": "Return",
       "UtilityTypes": {
         "armor": "Armor",
         "gear": "Gear",

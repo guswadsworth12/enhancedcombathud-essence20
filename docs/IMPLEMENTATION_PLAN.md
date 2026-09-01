@@ -46,6 +46,11 @@ Exit when adapter tests are independent of Argon UI code.
 ### 3. Playable HUD
 
 - Portrait/status area, initiative, skills, weapon effects, powers, utility panels, and enriched tooltips.
+- Keep the initial Utility information boundary to Armor, Gear, Hang-Ups,
+  Perks, Shields, and Traits. Defer other information-safe Item types until the
+  core `playerCharacter`/`npc` combat and Morph matrix is complete; never add a
+  type to the generic information path unless its native details template is
+  verified.
 - Group powers by Essence20's real action types: Free, Full Action, Move,
   Standard, Standard and Move, Whole Turn, Ten Minutes, and One Hour. Use
   `canActivate` only for sheet-parity visibility/availability; native
