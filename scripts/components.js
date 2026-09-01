@@ -65,7 +65,9 @@ export async function toggleMorph(actor) {
     ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
     return;
   }
-  return actor.morph();
+  const result = await actor.morph();
+  await globalThis.ui?.ARGON?.render?.();
+  return result;
 }
 
 export async function activatePower(actor, power, importer = (path) => import(path)) {

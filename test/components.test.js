@@ -56,8 +56,12 @@ test("initiative refuses non-owner calls", async () => {
 
 test("Morph delegates to the native owned actor helper", async () => {
   let calls = 0;
+  let renders = 0;
+  globalThis.ui.ARGON = { async render() { renders += 1; } };
   await toggleMorph({ isOwner: true, morph() { calls += 1; } });
   assert.equal(calls, 1);
+  assert.equal(renders, 1);
+  delete globalThis.ui.ARGON;
 });
 
 test("Morph refuses non-owner calls", async () => {
