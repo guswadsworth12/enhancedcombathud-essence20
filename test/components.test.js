@@ -4,7 +4,8 @@ import {
   activatePower,
   buildSkillRollDataset,
   formatSkillRank,
-  formatSkillStatus
+  formatSkillStatus,
+  rollInitiative
 } from "../scripts/components.js";
 
 const skill = {
@@ -36,6 +37,18 @@ test("formats compact skill drawer values", () => {
   assert.equal(formatSkillRank(skill), "d4 +2");
   assert.equal(formatSkillStatus(skill), "★ E");
   assert.equal(formatSkillStatus({ ...skill, specialized: false, edge: false }), "—");
+});
+
+test("initiative refuses non-owner calls", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let warning = null;
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  let rolls = 0;
+
+  await rollInitiative({ isOwner: false, rollInitiative() { rolls += 1; } });
+
+  assert.equal(rolls, 0);
+  assert.equal(warning, "ECHESSENCE20.Errors.NotOwner");
 });
 
 test("activates powers through Essence20's native powerCost helper", async () => {

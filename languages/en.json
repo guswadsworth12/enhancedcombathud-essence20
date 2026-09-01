@@ -4,6 +4,7 @@
       "Title": "Actions",
       "Weapons": "Weapons",
       "Powers": "Powers",
+      "Initiative": "Initiative",
       "PowerTypes": {
         "free": "Free",
         "fullAction": "Full Action",

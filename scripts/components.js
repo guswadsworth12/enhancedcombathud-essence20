@@ -49,6 +49,14 @@ export function formatSkillStatus(skill) {
   return status.join(" ") || "—";
 }
 
+export async function rollInitiative(actor) {
+  if (!actor?.isOwner || typeof actor.rollInitiative !== "function") {
+    ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+    return;
+  }
+  return actor.rollInitiative({ createCombatants: true });
+}
+
 export async function activatePower(actor, power, importer = (path) => import(path)) {
   let powerCost = null;
   try {
@@ -271,6 +279,16 @@ export function createComponents(ARGON) {
     }
   }
 
+  class Essence20ButtonHud extends ARGON.ButtonHud {
+    async _getButtons() {
+      return [{
+        label: "ECHESSENCE20.Actions.Initiative",
+        icon: "fa-solid fa-hourglass-start",
+        onClick: () => rollInitiative(this.actor)
+      }];
+    }
+  }
+
   class Essence20WeaponSets extends ARGON.WeaponSets {
     async _onSetChange() {}
   }
@@ -280,6 +298,7 @@ export function createComponents(ARGON) {
     Essence20DrawerPanel,
     Essence20ActionsPanel,
     Essence20PowersPanel,
+    Essence20ButtonHud,
     Essence20WeaponSets
   };
 }

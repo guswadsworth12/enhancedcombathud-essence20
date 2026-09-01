@@ -11,6 +11,7 @@ export function registerEssence20Hud(CoreHUD) {
     components.Essence20ActionsPanel,
     components.Essence20PowersPanel
   ]);
+  CoreHUD.defineButtonHud(components.Essence20ButtonHud);
   CoreHUD.defineWeaponSets(components.Essence20WeaponSets);
   CoreHUD.defineSupportedActorTypes([...SUPPORTED_ACTOR_TYPES]);
 

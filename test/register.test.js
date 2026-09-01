@@ -17,6 +17,7 @@ class BaseItemButton {
   get classes() { return ["feature-element"]; }
 }
 class BaseButtonPanelButton {}
+class BaseButtonHud {}
 class BaseAccordionPanel {
   constructor(options) { Object.assign(this, options); }
 }
@@ -41,11 +42,13 @@ function fakeCore() {
           }
         }
       },
-      WeaponSets: BaseComponent
+      WeaponSets: BaseComponent,
+      ButtonHud: BaseButtonHud
     },
     definePortraitPanel(value) { registrations.portrait = value; },
     defineDrawerPanel(value) { registrations.drawer = value; },
     defineMainPanels(value) { registrations.main = value; },
+    defineButtonHud(value) { registrations.buttonHud = value; },
     defineWeaponSets(value) { registrations.weaponSets = value; },
     defineSupportedActorTypes(value) { registrations.actorTypes = value; }
   };
@@ -62,7 +65,26 @@ test("registers the minimum Argon component set without patching Core", () => {
     components.Essence20PowersPanel
   ]);
   assert.equal(CoreHUD.registrations.weaponSets, components.Essence20WeaponSets);
+  assert.equal(CoreHUD.registrations.buttonHud, components.Essence20ButtonHud);
   assert.deepEqual(CoreHUD.registrations.actorTypes, ["playerCharacter", "npc"]);
+});
+
+test("button HUD delegates initiative to the native actor workflow", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let options = null;
+  const components = registerEssence20Hud(fakeCore());
+  const hud = new components.Essence20ButtonHud();
+  hud.actor = {
+    isOwner: true,
+    rollInitiative(value) { options = value; }
+  };
+
+  const [button] = await hud._getButtons();
+  await button.onClick();
+
+  assert.equal(button.label, "ECHESSENCE20.Actions.Initiative");
+  assert.equal(button.icon, "fa-solid fa-hourglass-start");
+  assert.deepEqual(options, { createCombatants: true });
 });
 
 test("fails clearly when the Argon adapter API is unavailable", () => {
