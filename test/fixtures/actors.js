@@ -55,7 +55,10 @@ export const rangerFixture = {
       }
     },
     { id: "power-1", name: "Test Power", type: "power", system: { actionType: "standard", usesInterval: "perScene", usesPer: 1 } },
-    { id: "perk-1", name: "Test Perk", type: "perk", system: {} }
+    {
+      id: "perk-1", name: "Test Perk", type: "perk",
+      system: { description: "A sanitized fixture perk.", source: { book: "Fixture Guide" } }
+    }
   ]
 };
 

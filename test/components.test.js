@@ -2,10 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   activatePower,
+  buildUtilityTooltipData,
   buildSkillRollDataset,
   formatSkillRank,
   formatSkillStatus,
-  rollInitiative
+  rollInitiative,
+  showUtilityInfo
 } from "../scripts/components.js";
 
 const skill = {
@@ -76,4 +78,40 @@ test("falls back to power information when the native handler cannot load", asyn
   }
 
   assert.deepEqual(dataset, {});
+});
+
+test("builds an enriched Argon tooltip for utility Items", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  const data = await buildUtilityTooltipData({
+    name: "Fixture Shield",
+    type: "shield",
+    description: "A safe fixture description.",
+    equipped: true,
+    active: false,
+    quantity: null,
+    classification: "light",
+    traits: ["deflective"],
+    source: "Fixture Guide",
+    document: {}
+  }, async (html) => `<p>${html}</p>`);
+
+  assert.equal(data.subtitle, "ECHESSENCE20.Actions.UtilityTypes.shield");
+  assert.equal(data.description, "<p>A safe fixture description.</p>");
+  assert.deepEqual(data.details.map(({ value }) => value), [
+    "ECHESSENCE20.Tooltips.Yes",
+    "ECHESSENCE20.Tooltips.No"
+  ]);
+  assert.deepEqual(data.properties.map(({ label }) => label), ["light", "deflective"]);
+});
+
+test("utility information refuses non-owner calls", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let warning = null;
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  let rolls = 0;
+
+  await showUtilityInfo({ isOwner: false }, { roll() { rolls += 1; } });
+
+  assert.equal(rolls, 0);
+  assert.equal(warning, "ECHESSENCE20.Errors.NotOwner");
 });

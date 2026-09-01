@@ -14,6 +14,9 @@ const POWER_ACTION_TYPES = Object.freeze([
   "free", "fullAction", "move", "standard", "standardAndMove",
   "wholeTurn", "tenMinutes", "oneHour"
 ]);
+const UTILITY_TYPES = Object.freeze([
+  "armor", "gear", "hangUp", "perk", "shield", "trait"
+]);
 
 function reportDiagnostics(actorId, diagnostics) {
   for (const diagnostic of diagnostics) {
@@ -66,6 +69,46 @@ export async function activatePower(actor, power, importer = (path) => import(pa
   }
   if (typeof powerCost === "function") return powerCost(actor, power);
   return power.roll?.({});
+}
+
+export async function showUtilityInfo(actor, item) {
+  if (!actor?.isOwner || typeof item?.roll !== "function") {
+    ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+    return;
+  }
+  return item.roll({ rollType: "info" });
+}
+
+export async function buildUtilityTooltipData(utility, enrich = (html) => (
+  foundry.applications.ux.TextEditor.implementation.enrichHTML(html, {
+    relativeTo: utility.document
+  })
+)) {
+  const details = [];
+  if (utility.equipped !== null) details.push({
+    label: "ECHESSENCE20.Tooltips.Equipped",
+    value: game.i18n.localize(`ECHESSENCE20.Tooltips.${utility.equipped ? "Yes" : "No"}`)
+  });
+  if (utility.active !== null) details.push({
+    label: "ECHESSENCE20.Tooltips.Active",
+    value: game.i18n.localize(`ECHESSENCE20.Tooltips.${utility.active ? "Yes" : "No"}`)
+  });
+  if (utility.quantity !== null) details.push({
+    label: "ECHESSENCE20.Tooltips.Quantity",
+    value: utility.quantity
+  });
+
+  return {
+    title: utility.name,
+    subtitle: game.i18n.localize(`ECHESSENCE20.Actions.UtilityTypes.${utility.type}`),
+    description: await enrich(utility.description),
+    details,
+    propertiesLabel: "ECHESSENCE20.Tooltips.Properties",
+    properties: [utility.classification, ...utility.traits]
+      .filter(Boolean)
+      .map((label) => ({ label })),
+    footerText: utility.source || ""
+  };
 }
 
 export function createComponents(ARGON) {
@@ -138,6 +181,27 @@ export function createComponents(ARGON) {
         return;
       }
       return this.item.roll({});
+    }
+  }
+
+  class Essence20UtilityButton extends ARGON.MAIN.BUTTONS.ItemButton {
+    constructor(utility) {
+      super({ item: utility.document, inActionPanel: false });
+      this.utility = utility;
+    }
+
+    get hasTooltip() { return true; }
+
+    async getTooltipData() {
+      return buildUtilityTooltipData(this.utility);
+    }
+
+    async _onLeftClick() {
+      return showUtilityInfo(this.actor, this.item);
+    }
+
+    async _onRightClick() {
+      return showUtilityInfo(this.actor, this.item);
     }
   }
 
@@ -279,6 +343,49 @@ export function createComponents(ARGON) {
     }
   }
 
+  class Essence20UtilitiesButton extends ARGON.MAIN.BUTTONS.ButtonPanelButton {
+    get label() {
+      return game.i18n.localize("ECHESSENCE20.Actions.Utilities");
+    }
+
+    get icon() {
+      return "icons/svg/backpack.svg";
+    }
+
+    async _getPanel() {
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      const categories = UTILITY_TYPES.flatMap((type) => {
+        const buttons = data.utility
+          .filter((utility) => utility.type === type)
+          .map((utility) => new Essence20UtilityButton(utility));
+        if (!buttons.length) return [];
+        return [new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory({
+          label: game.i18n.localize(`ECHESSENCE20.Actions.UtilityTypes.${type}`),
+          buttons
+        })];
+      });
+      return new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanel({
+        id: "essence20-utilities",
+        accordionPanelCategories: categories
+      });
+    }
+  }
+
+  class Essence20UtilitiesPanel extends ARGON.MAIN.ActionPanel {
+    get classes() {
+      return ["actions-container", "essence20-actions-container", "essence20-utilities-container"];
+    }
+
+    get label() {
+      return game.i18n.localize("ECHESSENCE20.Actions.Utilities");
+    }
+
+    async _getButtons() {
+      const data = new Essence20ActorAdapter(this.actor).normalize();
+      return data.utility.length ? [new Essence20UtilitiesButton()] : [];
+    }
+  }
+
   class Essence20ButtonHud extends ARGON.ButtonHud {
     async _getButtons() {
       return [{
@@ -298,6 +405,7 @@ export function createComponents(ARGON) {
     Essence20DrawerPanel,
     Essence20ActionsPanel,
     Essence20PowersPanel,
+    Essence20UtilitiesPanel,
     Essence20ButtonHud,
     Essence20WeaponSets
   };

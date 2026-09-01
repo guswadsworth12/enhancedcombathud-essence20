@@ -137,7 +137,20 @@ export function normalizePower(item) {
 }
 
 export function normalizeUtilityItem(item) {
-  return { ...baseItem(item), equipped: item.system?.equipped ?? null };
+  const system = item.system ?? {};
+  const source = typeof system.source === "string"
+    ? system.source
+    : [system.source?.book, system.source?.page].filter(Boolean).join(" ");
+  return {
+    ...baseItem(item),
+    description: system.description ?? "",
+    equipped: system.equipped ?? null,
+    active: system.active ?? null,
+    quantity: system.quantity ?? null,
+    classification: system.classification ?? null,
+    traits: [...(system.itemAndUpgradeTraits ?? system.traits ?? [])],
+    source: source || null
+  };
 }
 
 export function isUtilityItem(item) {

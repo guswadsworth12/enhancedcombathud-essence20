@@ -62,7 +62,8 @@ test("registers the minimum Argon component set without patching Core", () => {
   assert.equal(CoreHUD.registrations.drawer, components.Essence20DrawerPanel);
   assert.deepEqual(CoreHUD.registrations.main, [
     components.Essence20ActionsPanel,
-    components.Essence20PowersPanel
+    components.Essence20PowersPanel,
+    components.Essence20UtilitiesPanel
   ]);
   assert.equal(CoreHUD.registrations.weaponSets, components.Essence20WeaponSets);
   assert.equal(CoreHUD.registrations.buttonHud, components.Essence20ButtonHud);
@@ -235,4 +236,30 @@ test("unavailable powers remain visible but cannot roll", async () => {
   assert.equal(button.power.canActivate, false);
   assert.equal(rolls, 0);
   assert.equal(warning, "ECHESSENCE20.Errors.PowerUnavailable");
+});
+
+test("utility accordion groups information-only Items and uses native info rolls", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let dataset = null;
+  const perk = {
+    ...rangerFixture.items.find(({ type }) => type === "perk"),
+    roll(value) { dataset = value; }
+  };
+  const actor = { ...rangerFixture, items: [perk] };
+  const components = registerEssence20Hud(fakeCore());
+  const panel = new components.Essence20UtilitiesPanel();
+  panel.actor = actor;
+
+  const [panelButton] = await panel._getButtons();
+  panelButton.actor = actor;
+  const accordion = await panelButton._getPanel();
+  const [button] = accordion.accordionPanelCategories[0].buttons;
+  button.actor = actor;
+  await button._onLeftClick();
+
+  assert.equal(accordion.id, "essence20-utilities");
+  assert.equal(accordion.accordionPanelCategories[0].label, "ECHESSENCE20.Actions.UtilityTypes.perk");
+  assert.equal(button.inActionPanel, false);
+  assert.equal(button.hasTooltip, true);
+  assert.deepEqual(dataset, { rollType: "info" });
 });

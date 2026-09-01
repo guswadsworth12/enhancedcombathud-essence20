@@ -9,7 +9,8 @@ export function registerEssence20Hud(CoreHUD) {
   CoreHUD.defineDrawerPanel(components.Essence20DrawerPanel);
   CoreHUD.defineMainPanels([
     components.Essence20ActionsPanel,
-    components.Essence20PowersPanel
+    components.Essence20PowersPanel,
+    components.Essence20UtilitiesPanel
   ]);
   CoreHUD.defineButtonHud(components.Essence20ButtonHud);
   CoreHUD.defineWeaponSets(components.Essence20WeaponSets);

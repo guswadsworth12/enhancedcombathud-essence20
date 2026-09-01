@@ -4,7 +4,16 @@
       "Title": "Actions",
       "Weapons": "Weapons",
       "Powers": "Powers",
+      "Utilities": "Features and Gear",
       "Initiative": "Initiative",
+      "UtilityTypes": {
+        "armor": "Armor",
+        "gear": "Gear",
+        "hangUp": "Hang-Ups",
+        "perk": "Perks",
+        "shield": "Shields",
+        "trait": "Traits"
+      },
       "PowerTypes": {
         "free": "Free",
         "fullAction": "Full Action",
@@ -43,6 +52,14 @@
       "NotOwner": "You do not have permission to roll for this actor.",
       "UnmatchedWeaponEffect": "This weapon effect is not linked to a valid weapon and cannot be rolled.",
       "PowerUnavailable": "This power cannot currently be activated."
+    },
+    "Tooltips": {
+      "Active": "Active",
+      "Equipped": "Equipped",
+      "Quantity": "Quantity",
+      "Properties": "Properties",
+      "Yes": "Yes",
+      "No": "No"
     },
     "Settings": {
       "DebugLogging": {
