@@ -107,7 +107,7 @@ export function createComponents(ARGON) {
 
   class Essence20PowerButton extends ARGON.MAIN.BUTTONS.ItemButton {
     constructor(power) {
-      super({ item: power.document, inActionPanel: true });
+      super({ item: power.document, inActionPanel: false });
       this.power = power;
       if (!power.canActivate) this.element.classList.add("essence20-disabled-action");
     }

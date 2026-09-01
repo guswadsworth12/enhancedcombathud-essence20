@@ -185,6 +185,8 @@ test("powers accordion groups real action types", async () => {
   assert.equal(accordion.accordionPanelCategories.length, 1);
   assert.equal(accordion.accordionPanelCategories[0].label, "ECHESSENCE20.Actions.PowerTypes.standard");
   assert.equal(accordion.accordionPanelCategories[0].buttons[0].item.name, "Test Power");
+  assert.equal(accordion.accordionPanelCategories[0].buttons[0].inActionPanel, false);
+  assert.deepEqual(accordion.accordionPanelCategories[0].buttons[0].classes, ["feature-element"]);
 });
 
 test("unavailable powers remain visible but cannot roll", async () => {
