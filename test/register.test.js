@@ -101,13 +101,14 @@ test("portrait stat blocks use normalized Essence20 vitals and defenses", async 
   const portrait = new components.Essence20PortraitPanel();
   portrait.actor = rangerFixture;
 
-  const [vitals, essences] = await portrait.getStatBlocks();
+  const [stats] = await portrait.getStatBlocks();
 
-  assert.equal(vitals[0].text, "Health 4/5");
-  assert.equal(vitals[1].text, "toughness 14");
-  assert.equal(vitals.length, 5);
-  assert.equal(essences.length, 4);
-  assert.equal(essences[0].text, "strength 4/4");
+  assert.equal(stats[0].text, "HP 4/5");
+  assert.equal(stats[0].tooltip, "Health");
+  assert.equal(stats[1].text, "TGH 14");
+  assert.equal(stats.length, 9);
+  assert.equal(stats[5].text, "STR 4/4");
+  assert.equal(stats[5].tooltip, "strength");
 });
 
 test("skill drawer delegates owned rolls to the native actor method", () => {

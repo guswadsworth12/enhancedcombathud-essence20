@@ -213,26 +213,52 @@ export function createComponents(ARGON) {
     async getStatBlocks() {
       const data = new Essence20ActorAdapter(this.actor).normalize();
       const label = (key) => game.i18n.localize(`ECHESSENCE20.Stats.${key}`);
+      const compactLabel = (key) => ({
+        Health: "HP",
+        toughness: "TGH",
+        evasion: "EVA",
+        willpower: "WIL",
+        cleverness: "CLE",
+        strength: "STR",
+        speed: "SPD",
+        smarts: "SMT",
+        social: "SOC"
+      })[key];
 
       return [
         [
           {
             id: "essence20-health",
-            text: `${label("Health")} ${data.health.value}/${data.health.max}`,
+            text: `${compactLabel("Health")} ${data.health.value}/${data.health.max}`,
+            tooltip: label("Health"),
             color: STAT_COLORS.health
           },
           ...Object.entries(data.defenses).map(([key, value]) => ({
             id: `essence20-defense-${key}`,
-            text: `${label(key)} ${value}`,
+            text: `${compactLabel(key)} ${value}`,
+            tooltip: label(key),
             color: STAT_COLORS.defense
+          })),
+          ...Object.entries(data.essences).map(([key, resource]) => ({
+            id: `essence20-essence-${key}`,
+            text: `${compactLabel(key)} ${resource.value}/${resource.max}`,
+            tooltip: label(key),
+            color: STAT_COLORS[key]
           }))
-        ],
-        Object.entries(data.essences).map(([key, resource]) => ({
-          id: `essence20-essence-${key}`,
-          text: `${label(key)} ${resource.value}/${resource.max}`,
-          color: STAT_COLORS[key]
-        }))
+        ]
       ];
+    }
+
+    async _renderInner(data) {
+      await super._renderInner(data);
+      const stats = this.element.querySelector(".portrait-stat-block:has(#essence20-health)");
+      if (!stats) return;
+      stats.classList.add("essence20-stat-grid");
+      const definitions = (await this.getStatBlocks())[0];
+      for (const definition of definitions) {
+        const element = stats.querySelector(`#${definition.id}`);
+        if (element && definition.tooltip) element.dataset.tooltip = definition.tooltip;
+      }
     }
   }
 

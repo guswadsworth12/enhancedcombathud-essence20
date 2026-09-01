@@ -9,3 +9,33 @@
   filter: grayscale(1);
   opacity: 0.55;
 }
+
+.extended-combat-hud .essence20-portrait-hud {
+  flex: 0 0 375px;
+  width: 375px;
+}
+
+.extended-combat-hud .essence20-portrait-hud .essence20-stat-grid {
+  background: color-mix(in srgb, var(--ech-portrait-base-background) 88%, black);
+  border-color: var(--ech-portrait-base-border);
+  bottom: 0.5rem;
+  display: grid;
+  font-size: 0.75rem;
+  gap: 0.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0.4rem;
+  position: absolute;
+  right: 0.5rem;
+  width: 10.5rem;
+}
+
+.extended-combat-hud .essence20-portrait-hud .essence20-stat-grid span {
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius: 2px;
+  min-width: 0;
+  padding: 0.2rem 0.3rem;
+  text-align: center;
+  white-space: nowrap;
+}
