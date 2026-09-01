@@ -349,7 +349,7 @@ export function createComponents(ARGON) {
     }
 
     get icon() {
-      return "icons/svg/backpack.svg";
+      return "icons/svg/item-bag.svg";
     }
 
     async _getPanel() {
