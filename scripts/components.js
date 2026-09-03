@@ -351,7 +351,7 @@ export function createComponents(ARGON) {
         { label: formatSkillStatus(skill) }
       ]));
 
-      return [{
+      const categories = [{
         captions: [
           { label: "ECHESSENCE20.Drawer.Skill", align: "left" },
           { label: "ECHESSENCE20.Drawer.Rank", align: "center" },
@@ -360,6 +360,20 @@ export function createComponents(ARGON) {
         buttons,
         gridCols: "minmax(9rem, 1fr) 4rem 4rem"
       }];
+      if (data.actionEconomy) categories.unshift({
+        captions: [
+          { label: "ECHESSENCE20.Drawer.Action", align: "left" },
+          { label: "ECHESSENCE20.Drawer.Allowance", align: "center" },
+          { label: "ECHESSENCE20.Drawer.Tracking", align: "center" }
+        ],
+        buttons: ["movement", "standard", "free"].map((key) => new Essence20SkillButton([
+          { label: `ECHESSENCE20.Drawer.ActionTypes.${key}` },
+          { label: String(data.actionEconomy[key]) },
+          { label: "ECHESSENCE20.Drawer.Advisory" }
+        ])),
+        gridCols: "minmax(9rem, 1fr) 4rem 5rem"
+      });
+      return categories;
     }
   }
 

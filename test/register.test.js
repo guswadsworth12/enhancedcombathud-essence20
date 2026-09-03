@@ -161,9 +161,11 @@ test("skill drawer delegates owned rolls to the native actor method", () => {
     rollSkill(value) { dataset = value; }
   };
 
-  const [category] = drawer.categories;
+  const [actions, category] = drawer.categories;
   category.buttons[0].buttons[0].onClick();
 
+  assert.deepEqual(actions.buttons.map((button) => button.buttons[1].label), ["1", "1", "1"]);
+  assert.ok(actions.buttons.every((button) => button.buttons[2].label === "ECHESSENCE20.Drawer.Advisory"));
   assert.equal(category.buttons.length, 2);
   assert.deepEqual(dataset, {
     skill: "athletics",

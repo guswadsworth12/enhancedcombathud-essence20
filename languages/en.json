@@ -31,7 +31,16 @@
       "Title": "Essences and Skills",
       "Skill": "Skill",
       "Rank": "Rank",
-      "Status": "Spec E S"
+      "Status": "Spec E S",
+      "Action": "Action allowance",
+      "Allowance": "Count",
+      "Tracking": "Mode",
+      "Advisory": "Advisory",
+      "ActionTypes": {
+        "movement": "Movement",
+        "standard": "Standard",
+        "free": "Free"
+      }
     },
     "Stats": {
       "Health": "HP",

@@ -21,6 +21,9 @@ test("normalizes a player character independently of Argon UI classes", () => {
   assert.equal(result.weapons[0].effects[0].skill, "finesse");
   assert.equal(result.powers[0].actionType, "standard");
   assert.equal(result.utility[0].type, "perk");
+  assert.deepEqual(result.actionEconomy, {
+    movement: 1, standard: 1, free: 1, tracked: false
+  });
   assert.equal(result.morph.actionAvailable, true);
 });
 
@@ -32,6 +35,7 @@ test("normalizes NPC defense value fields for all reference tiers", () => {
   assert.deepEqual(results.map(({ health }) => health.max), [1, 5, 3]);
   assert.deepEqual(results.map(({ defenses }) => defenses.toughness), [12, 18, 12]);
   assert.ok(results.every(({ morph }) => morph.actionAvailable === false));
+  assert.ok(results.every(({ actionEconomy }) => actionEconomy === null));
 });
 
 test("exposes native Morph for a capable NPC", () => {
