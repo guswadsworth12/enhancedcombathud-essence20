@@ -56,12 +56,42 @@ test("initiative refuses non-owner calls", async () => {
 
 test("Morph delegates to the native owned actor helper", async () => {
   let calls = 0;
-  let renders = 0;
-  globalThis.ui.ARGON = { async render() { renders += 1; } };
-  await toggleMorph({ isOwner: true, morph() { calls += 1; } });
+  let rebinds = 0;
+  let updateActor = null;
+  globalThis.Hooks = {
+    on(name, callback) {
+      assert.equal(name, "updateActor");
+      updateActor = callback;
+      return 17;
+    },
+    off(name, id) {
+      assert.equal(name, "updateActor");
+      assert.equal(id, 17);
+    }
+  };
+  const target = { id: "token" };
+  globalThis.ui.ARGON = {
+    _target: target,
+    async bind(boundTarget) {
+      assert.equal(boundTarget, target);
+      rebinds += 1;
+    }
+  };
+  const actor = {
+    uuid: "Actor.test",
+    isOwner: true,
+    system: { isMorphed: false },
+    morph() { calls += 1; }
+  };
+  const toggled = toggleMorph(actor);
   assert.equal(calls, 1);
-  assert.equal(renders, 1);
+  assert.equal(rebinds, 0);
+  actor.system.isMorphed = true;
+  updateActor(actor);
+  await toggled;
+  assert.equal(rebinds, 1);
   delete globalThis.ui.ARGON;
+  delete globalThis.Hooks;
 });
 
 test("Morph refuses non-owner calls", async () => {

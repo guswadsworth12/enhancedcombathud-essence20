@@ -60,14 +60,47 @@ export async function rollInitiative(actor) {
   return actor.rollInitiative({ createCombatants: true });
 }
 
+function waitForMorphUpdate(actor, expectedState, timeoutMs = 3000) {
+  const hooks = globalThis.Hooks;
+  if (typeof hooks?.on !== "function" || typeof hooks?.off !== "function") {
+    return { promise: Promise.resolve(), cancel() {} };
+  }
+
+  let hookId;
+  let timer;
+  let finish;
+  const promise = new Promise((resolve) => {
+    finish = () => {
+      if (hookId !== undefined) hooks.off("updateActor", hookId);
+      if (timer !== undefined) clearTimeout(timer);
+      resolve();
+    };
+    hookId = hooks.on("updateActor", (updatedActor) => {
+      const sameActor = updatedActor === actor || updatedActor?.uuid === actor?.uuid;
+      if (sameActor && Boolean(updatedActor.system?.isMorphed) === expectedState) finish();
+    });
+    timer = setTimeout(finish, timeoutMs);
+  });
+  return { promise, cancel: finish };
+}
+
 export async function toggleMorph(actor) {
   if (!actor?.isOwner || typeof actor.morph !== "function") {
     ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
     return;
   }
-  const result = await actor.morph();
-  await globalThis.ui?.ARGON?.render?.();
-  return result;
+  const update = waitForMorphUpdate(actor, !Boolean(actor.system?.isMorphed));
+  try {
+    const result = actor.morph();
+    await update.promise;
+    const hud = globalThis.ui?.ARGON;
+    if (hud?._target && typeof hud.bind === "function") await hud.bind(hud._target);
+    else await hud?.render?.(true);
+    return result;
+  } catch (error) {
+    update.cancel();
+    throw error;
+  }
 }
 
 export async function activatePower(actor, power, importer = (path) => import(path)) {
