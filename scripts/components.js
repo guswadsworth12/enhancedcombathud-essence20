@@ -17,6 +17,14 @@ const POWER_ACTION_TYPES = Object.freeze([
 const UTILITY_TYPES = Object.freeze([
   "armor", "gear", "hangUp", "perk", "shield", "trait"
 ]);
+const MOVEMENT_MODE_KEYS = Object.freeze({
+  walk: "ground",
+  ground: "ground",
+  fly: "aerial",
+  aerial: "aerial",
+  climb: "climb",
+  swim: "swim"
+});
 
 function reportDiagnostics(actorId, diagnostics) {
   for (const diagnostic of diagnostics) {
@@ -50,6 +58,14 @@ export function formatSkillStatus(skill) {
   if (skill.edge) status.push("E");
   if (skill.snag) status.push("S");
   return status.join(" ") || "—";
+}
+
+export function movementSpaces(actor, movementMode, sceneDistance) {
+  const data = new Essence20ActorAdapter(actor).normalize();
+  const key = MOVEMENT_MODE_KEYS[movementMode] ?? "ground";
+  const distance = Number(sceneDistance);
+  if (!Number.isFinite(distance) || distance <= 0) return 0;
+  return Math.max(0, data.movement[key] / distance);
 }
 
 export async function rollInitiative(actor) {
@@ -476,6 +492,16 @@ export function createComponents(ARGON) {
     }
   }
 
+  class Essence20MovementHud extends ARGON.MovementHud {
+    get movementMax() {
+      return movementSpaces(
+        this.actor,
+        this.movementMode,
+        globalThis.canvas?.scene?.dimensions?.distance
+      );
+    }
+  }
+
   class Essence20WeaponSets extends ARGON.WeaponSets {
     async _onSetChange() {}
   }
@@ -487,6 +513,7 @@ export function createComponents(ARGON) {
     Essence20PowersPanel,
     Essence20UtilitiesPanel,
     Essence20ButtonHud,
+    Essence20MovementHud,
     Essence20WeaponSets
   };
 }

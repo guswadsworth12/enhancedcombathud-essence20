@@ -18,6 +18,7 @@ class BaseItemButton {
 }
 class BaseButtonPanelButton {}
 class BaseButtonHud {}
+class BaseMovementHud {}
 class BaseAccordionPanel {
   constructor(options) { Object.assign(this, options); }
 }
@@ -43,12 +44,14 @@ function fakeCore() {
         }
       },
       WeaponSets: BaseComponent,
-      ButtonHud: BaseButtonHud
+      ButtonHud: BaseButtonHud,
+      MovementHud: BaseMovementHud
     },
     definePortraitPanel(value) { registrations.portrait = value; },
     defineDrawerPanel(value) { registrations.drawer = value; },
     defineMainPanels(value) { registrations.main = value; },
     defineButtonHud(value) { registrations.buttonHud = value; },
+    defineMovementHud(value) { registrations.movementHud = value; },
     defineWeaponSets(value) { registrations.weaponSets = value; },
     defineSupportedActorTypes(value) { registrations.actorTypes = value; }
   };
@@ -67,7 +70,18 @@ test("registers the minimum Argon component set without patching Core", () => {
   ]);
   assert.equal(CoreHUD.registrations.weaponSets, components.Essence20WeaponSets);
   assert.equal(CoreHUD.registrations.buttonHud, components.Essence20ButtonHud);
+  assert.equal(CoreHUD.registrations.movementHud, components.Essence20MovementHud);
   assert.deepEqual(CoreHUD.registrations.actorTypes, ["playerCharacter", "npc"]);
+});
+
+test("movement HUD exposes normalized movement in scene spaces", () => {
+  globalThis.canvas = { scene: { dimensions: { distance: 5 } } };
+  const components = registerEssence20Hud(fakeCore());
+  const movement = new components.Essence20MovementHud();
+  movement.actor = rangerFixture;
+  movement.movementMode = "walk";
+
+  assert.equal(movement.movementMax, 6);
 });
 
 test("button HUD delegates initiative to the native actor workflow", async () => {

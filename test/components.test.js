@@ -6,10 +6,12 @@ import {
   buildSkillRollDataset,
   formatSkillRank,
   formatSkillStatus,
+  movementSpaces,
   rollInitiative,
   showUtilityInfo,
   toggleMorph
 } from "../scripts/components.js";
+import { rangerFixture } from "./fixtures/actors.js";
 
 const skill = {
   key: "athletics",
@@ -40,6 +42,23 @@ test("formats compact skill drawer values", () => {
   assert.equal(formatSkillRank(skill), "d4 +2");
   assert.equal(formatSkillStatus(skill), "★ E");
   assert.equal(formatSkillStatus({ ...skill, specialized: false, edge: false }), "—");
+});
+
+test("converts Essence20 movement modes to scene spaces", () => {
+  const actor = {
+    ...rangerFixture,
+    system: {
+      ...rangerFixture.system,
+      movement: {
+        ...rangerFixture.system.movement,
+        aerial: { base: 20, bonus: 5, total: 25 }
+      }
+    }
+  };
+  assert.equal(movementSpaces(actor, "walk", 5), 6);
+  assert.equal(movementSpaces(actor, "fly", 5), 5);
+  assert.equal(movementSpaces(actor, "unknown", 5), 6);
+  assert.equal(movementSpaces(actor, "walk", 0), 0);
 });
 
 test("initiative refuses non-owner calls", async () => {
