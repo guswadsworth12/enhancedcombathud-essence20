@@ -57,8 +57,19 @@ test("converts Essence20 movement modes to scene spaces", () => {
   };
   assert.equal(movementSpaces(actor, "walk", 5), 6);
   assert.equal(movementSpaces(actor, "fly", 5), 5);
+  assert.equal(movementSpaces(actor, "burrow", 5), 0);
   assert.equal(movementSpaces(actor, "unknown", 5), 6);
   assert.equal(movementSpaces(actor, "walk", 0), 0);
+});
+
+test("passes beta specialization keys to the native skill roll", () => {
+  assert.deepEqual(buildSkillRollDataset(skill, {
+    key: "climbing", name: "Climbing", shift: "d6", specialized: true
+  }), {
+    skill: "athletics", essence: "strength", shift: "d6", shiftUp: 1,
+    shiftDown: 0, isSpecialized: true, canCritD2: true,
+    specializationKey: "climbing", specializationName: "Climbing"
+  });
 });
 
 test("initiative refuses non-owner calls", async () => {
@@ -126,30 +137,50 @@ test("Morph refuses non-owner calls", async () => {
 });
 
 test("activates powers through Essence20's native powerCost helper", async () => {
-  const actor = { id: "actor" };
-  const power = { id: "power" };
+  const actor = { id: "actor", isOwner: true };
+  const power = { id: "power", parent: actor };
   let calledWith = null;
 
-  await activatePower(actor, power, async () => ({
-    powerCost: (...args) => { calledWith = args; }
-  }));
+  await activatePower(actor, power, async (path) => path.includes("power-handler")
+    ? { powerCost: (...args) => { calledWith = args; } }
+    : path.includes("power-use") ? { canUsePower: () => true }
+      : { hasItemUse: () => false });
 
   assert.deepEqual(calledWith, [actor, power]);
 });
 
-test("falls back to power information when the native handler cannot load", async () => {
-  let dataset = null;
-  const oldWarn = console.warn;
-  console.warn = () => {};
-  try {
-    await activatePower({}, { roll: (value) => { dataset = value; } }, async () => {
-      throw new Error("missing handler");
-    });
-  } finally {
-    console.warn = oldWarn;
-  }
+test("delegates a Power's own Use to the native item-use handler", async () => {
+  const actor = { isOwner: true };
+  const power = { parent: actor };
+  let used = false;
+  await activatePower(actor, power, async (path) => path.includes("banked-buffs")
+    ? { hasItemUse: () => true, canUsePerk: () => true, onPerkUse: () => { used = true; } }
+    : path.includes("power-use") ? { canUsePower: () => true }
+      : { powerCost: () => { throw new Error("double cost"); } });
+  assert.equal(used, true);
+});
 
-  assert.deepEqual(dataset, {});
+test("does not bypass native Power automation when its handler is missing", async () => {
+  const actor = { isOwner: true };
+  const power = { parent: actor };
+  await assert.rejects(activatePower(actor, power, async () => {
+    throw new Error("missing handler");
+  }), /missing handler/);
+});
+
+test("unavailable Powers do not roll or spend", async () => {
+  const actor = { isOwner: true };
+  const power = { parent: actor };
+  let spent = false;
+  let warning = null;
+  globalThis.game = { i18n: { localize: (key) => key } };
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  await activatePower(actor, power, async (path) => path.includes("banked-buffs")
+    ? { hasItemUse: () => false }
+    : path.includes("power-use") ? { canUsePower: () => false }
+      : { powerCost: () => { spent = true; } });
+  assert.equal(spent, false);
+  assert.equal(warning, "ECHESSENCE20.Errors.PowerUnavailable");
 });
 
 test("builds an enriched Argon tooltip for utility Items", async () => {

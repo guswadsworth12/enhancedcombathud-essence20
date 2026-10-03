@@ -178,6 +178,32 @@ test("skill drawer delegates owned rolls to the native actor method", () => {
   });
 });
 
+test("beta drawer exposes each allowed Essence and native specialization", () => {
+  globalThis.CONFIG = { E20: { skills: { athletics: "Athletics" } } };
+  globalThis.game = { i18n: { localize: (key) => key } };
+  let dataset = null;
+  const actor = {
+    ...rangerFixture,
+    system: { ...rangerFixture.system, skills: {
+      athletics: { ...rangerFixture.system.skills.athletics,
+        essences: { strength: true, social: true },
+        specializations: { climbing: { name: "Climbing", shift: "d6", isSpecialized: true } }
+      }
+    } },
+    rollSkill(value) { dataset = value; }
+  };
+  const components = registerEssence20Hud(fakeCore());
+  const drawer = new components.Essence20DrawerPanel();
+  drawer.actor = actor;
+  const skills = drawer.categories[1].buttons;
+
+  assert.equal(skills.length, 4);
+  skills[3].buttons[0].onClick();
+  assert.equal(dataset.essence, "social");
+  assert.equal(dataset.specializationKey, "climbing");
+  assert.equal(dataset.shift, "d4");
+});
+
 test("action panel exposes equipped live weapon effects", async () => {
   let rolledWith = null;
   const effect = {
@@ -201,7 +227,7 @@ test("action panel exposes equipped live weapon effects", async () => {
   assert.equal(buttons[0].inActionPanel, true);
   assert.deepEqual(buttons[0].ranges, { normal: null, long: null });
   assert.equal(buttons[0].targets, 1);
-  assert.deepEqual(rolledWith, {});
+  assert.deepEqual(rolledWith, { rollType: "weaponEffect" });
 });
 
 test("action panel shows an unmatched effect as disabled and never rolls it", async () => {
@@ -254,14 +280,14 @@ test("powers accordion groups real action types", async () => {
   assert.deepEqual(accordion.accordionPanelCategories[0].buttons[0].classes, ["feature-element"]);
 });
 
-test("unavailable powers remain visible but cannot roll", async () => {
+test("powers remain visible and right-click only posts information", async () => {
   globalThis.game = { i18n: { localize: (key) => key } };
   let warning = null;
   globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
-  let rolls = 0;
+  let dataset = null;
   const power = {
     ...rangerFixture.items.find(({ type }) => type === "power"),
-    roll() { rolls += 1; }
+    roll(value) { dataset = value; }
   };
   const actor = { ...rangerFixture, items: [power] };
   const components = registerEssence20Hud(fakeCore());
@@ -273,11 +299,11 @@ test("unavailable powers remain visible but cannot roll", async () => {
   const accordion = await panelButton._getPanel();
   const [button] = accordion.accordionPanelCategories[0].buttons;
   button.actor = actor;
-  await button._onLeftClick();
+  await button._onRightClick();
 
   assert.equal(button.power.canActivate, false);
-  assert.equal(rolls, 0);
-  assert.equal(warning, "ECHESSENCE20.Errors.PowerUnavailable");
+  assert.deepEqual(dataset, { rollType: "info" });
+  assert.equal(warning, null);
 });
 
 test("utility accordion groups information-only Items and uses native info rolls", async () => {

@@ -4,6 +4,6 @@ export const SUPPORTED_ACTOR_TYPES = Object.freeze(["playerCharacter", "npc"]);
 export const ARGON_MODULE_ID = "enhancedcombathud";
 export const COMPATIBILITY = Object.freeze({
   foundry: { minimum: "14.0.0", maximumExclusive: "15.0.0" },
-  essence20: { minimum: "5.1.0", maximumExclusive: "5.2.0" },
+  essence20: { minimum: "6.0.3-beta", maximumExclusive: "6.0.4" },
   argon: { minimum: "5.0.0", maximumExclusive: "6.0.0" }
 });

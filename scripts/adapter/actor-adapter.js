@@ -9,7 +9,7 @@ import {
 
 const DEFENSES = ["toughness", "evasion", "willpower", "cleverness"];
 const ESSENCES = ["strength", "speed", "smarts", "social"];
-const MOVEMENT = ["ground", "aerial", "climb", "swim"];
+const MOVEMENT = ["ground", "aerial", "burrow", "climb", "swim"];
 
 function normalizeResource(resource = {}) {
   return {
@@ -29,9 +29,10 @@ function normalizeMovement(mode = {}) {
   return total === 0 && base !== 0 ? base + bonus : total;
 }
 
-function normalizeSkills(skills = {}) {
+function normalizeSkills(skills = {}, actorType) {
   return Object.entries(skills)
-    .filter(([key]) => key !== "roleSkillDie")
+    .filter(([key, skill]) => key !== "roleSkillDie" && key !== "wealth"
+      && (actorType !== "npc" || skill?.isChosen))
     .map(([key, skill = {}]) => ({
       key,
       shift: skill.shift ?? "d20",
@@ -43,7 +44,11 @@ function normalizeSkills(skills = {}) {
       canCritD2: Boolean(skill.canCritD2),
       specialized: Boolean(skill.isSpecialized),
       initiative: Boolean(skill.canBeInitiative),
-      essences: ESSENCES.filter((essence) => Boolean(skill.essences?.[essence]))
+      essences: ESSENCES.filter((essence) => Boolean(skill.essences?.[essence])),
+      specializations: Object.entries(skill.specializations ?? {}).map(([key, value]) => ({
+        key, name: value.name, shift: value.shift ?? skill.shift,
+        specialized: Boolean(value.isSpecialized)
+      }))
     }));
 }
 
@@ -105,7 +110,7 @@ export class Essence20ActorAdapter {
         formula: system.initiative?.formula ?? null
       },
       actionEconomy: normalizeActionEconomy(actor.type, system.essences),
-      skills: normalizeSkills(system.skills),
+      skills: normalizeSkills(system.skills, actor.type),
       weapons,
       unmatchedWeaponEffects,
       diagnostics,

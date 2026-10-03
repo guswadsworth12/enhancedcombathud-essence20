@@ -1,8 +1,8 @@
 {
   "id": "enhancedcombathud-essence20",
   "title": "Argon - Combat HUD (ESSENCE20)",
-  "description": "Essence20 5.1 system adapter for Argon - Combat HUD (CORE).",
-  "version": "0.1.0-dev.19",
+  "description": "Essence20 6.0.3 beta system adapter for Argon - Combat HUD (CORE).",
+  "version": "0.1.0-dev.20",
   "authors": [
     {
       "name": "guswadsworth12",
@@ -20,8 +20,8 @@
         "id": "essence20",
         "type": "system",
         "compatibility": {
-          "minimum": "5.1.0",
-          "maximum": "5.1.0"
+          "minimum": "6.0.3-beta",
+          "maximum": "6.0.3-beta"
         }
       }
     ],
@@ -45,8 +45,8 @@
     }
   ],
   "url": "https://github.com/guswadsworth12/enhancedcombathud-essence20",
-  "manifest": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.19/module.json",
-  "download": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.19/enhancedcombathud-essence20-v0.1.0-dev.19.zip",
+  "manifest": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.20/module.json",
+  "download": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.20/enhancedcombathud-essence20-v0.1.0-dev.20.zip",
   "license": "LICENSE",
   "readme": "README.md"
 }

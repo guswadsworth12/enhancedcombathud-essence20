@@ -7,9 +7,9 @@ import {
 } from "../scripts/compatibility.js";
 
 const supported = {
-  foundryVersion: "14.367",
+  foundryVersion: "14.368",
   systemId: "essence20",
-  systemVersion: "5.1.0",
+  systemVersion: "6.0.3-beta",
   argonActive: true,
   argonVersion: "5.0.1"
 };
@@ -30,7 +30,7 @@ test("returns actionable issue keys for unsupported dependencies", () => {
     evaluateCompatibility({
       ...supported,
       foundryVersion: "15.0.0",
-      systemVersion: "5.2.0",
+      systemVersion: "6.0.4",
       argonVersion: "6.0.0"
     }).map(({ key }) => key),
     ["FoundryVersion", "SystemVersion", "ArgonVersion"]
@@ -44,8 +44,8 @@ test("returns actionable issue keys for unsupported dependencies", () => {
 
 test("reads dependency state from the Foundry game object", () => {
   const game = {
-    version: "14.367",
-    system: { id: "essence20", version: "5.1.0" },
+    version: "14.368",
+    system: { id: "essence20", version: "6.0.3-beta" },
     modules: new Map([["enhancedcombathud", { active: true, version: "5.0.1" }]])
   };
   assert.deepEqual(inspectGameCompatibility(game), []);
