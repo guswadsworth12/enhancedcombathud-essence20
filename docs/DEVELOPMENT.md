@@ -4,7 +4,7 @@
 
 - Node.js 20 or newer
 - Foundry VTT 14
-- Essence20 5.1.x
+- Essence20 6.0.3-beta
 - Argon - Combat HUD (CORE) 5.x
 
 ## Local checks

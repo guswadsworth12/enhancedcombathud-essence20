@@ -10,6 +10,8 @@ const STAT_COLORS = Object.freeze({
 });
 const REPORTED_DIAGNOSTICS = new Set();
 const POWER_HANDLER_PATH = "/systems/essence20/module/sheet-handlers/power-handler.mjs";
+const POWER_USE_PATH = "/systems/essence20/module/helpers/power-use.mjs";
+const ITEM_USE_PATH = "/systems/essence20/module/helpers/banked-buffs.mjs";
 const POWER_ACTION_TYPES = Object.freeze([
   "free", "fullAction", "move", "standard", "standardAndMove",
   "wholeTurn", "tenMinutes", "oneHour"
@@ -22,6 +24,7 @@ const MOVEMENT_MODE_KEYS = Object.freeze({
   ground: "ground",
   fly: "aerial",
   aerial: "aerial",
+  burrow: "burrow",
   climb: "climb",
   swim: "swim"
 });
@@ -35,15 +38,19 @@ function reportDiagnostics(actorId, diagnostics) {
   }
 }
 
-export function buildSkillRollDataset(skill) {
+export function buildSkillRollDataset(skill, specialization = null, essence = skill.essences[0]) {
   return {
     skill: skill.key,
-    essence: skill.essences[0] ?? "",
-    shift: skill.shift,
+    essence: essence ?? "",
+    shift: specialization?.shift ?? skill.shift,
     shiftUp: skill.shiftUp,
     shiftDown: skill.shiftDown,
-    isSpecialized: skill.specialized,
-    canCritD2: skill.canCritD2
+    isSpecialized: specialization?.specialized ?? skill.specialized,
+    canCritD2: skill.canCritD2,
+    ...(specialization ? {
+      specializationKey: specialization.key,
+      specializationName: specialization.name
+    } : {})
   };
 }
 
@@ -120,14 +127,19 @@ export async function toggleMorph(actor) {
 }
 
 export async function activatePower(actor, power, importer = (path) => import(path)) {
-  let powerCost = null;
-  try {
-    ({ powerCost } = await importer(POWER_HANDLER_PATH));
-  } catch (error) {
-    console.warn("enhancedcombathud-essence20 | Native power handler unavailable; showing power information instead.", error);
+  if (!actor?.isOwner || power?.parent !== actor) {
+    ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+    return;
   }
-  if (typeof powerCost === "function") return powerCost(actor, power);
-  return power.roll?.({});
+  const [{ powerCost }, { canUsePower }, { hasItemUse, canUsePerk, onPerkUse }] = await Promise.all([
+    importer(POWER_HANDLER_PATH), importer(POWER_USE_PATH), importer(ITEM_USE_PATH)
+  ]);
+  if (hasItemUse(power)) {
+    if (canUsePerk(power)) return onPerkUse(power);
+  } else if (canUsePower(power)) {
+    return powerCost(actor, power);
+  }
+  ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.PowerUnavailable"));
 }
 
 export async function showUtilityInfo(actor, item) {
@@ -195,7 +207,7 @@ export function createComponents(ARGON) {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
         return;
       }
-      return this.item.roll({});
+      return this.item.roll({ rollType: "weaponEffect" });
     }
   }
 
@@ -219,16 +231,11 @@ export function createComponents(ARGON) {
     constructor(power) {
       super({ item: power.document, inActionPanel: false });
       this.power = power;
-      if (!power.canActivate) this.element.classList.add("essence20-disabled-action");
     }
 
     async _onLeftClick() {
       if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
-        return;
-      }
-      if (!this.power.canActivate) {
-        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.PowerUnavailable"));
         return;
       }
       return activatePower(this.actor, this.item);
@@ -239,7 +246,7 @@ export function createComponents(ARGON) {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
         return;
       }
-      return this.item.roll({});
+      return this.item.roll({ rollType: "info" });
     }
   }
 
@@ -336,19 +343,38 @@ export function createComponents(ARGON) {
         const configured = globalThis.CONFIG?.E20?.skills?.[key];
         return configured ? game.i18n.localize(configured) : key;
       };
-      const buttons = data.skills.map((skill) => new Essence20SkillButton([
-        {
-          label: skillName(skill.key),
-          onClick: () => {
-            if (!this.actor.isOwner || typeof this.actor.rollSkill !== "function") {
-              ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
-              return;
+      const skillButton = (skill, essence, specialization = null) => {
+        const label = specialization ? `↳ ${specialization.name}` : skillName(skill.key);
+        const essenceLabel = globalThis.CONFIG?.E20?.essences?.[essence] ?? essence;
+        const suffix = skill.essences.length > 1 ? ` (${game.i18n.localize(essenceLabel)})` : "";
+        return new Essence20SkillButton([
+          {
+            label: `${label}${suffix}`,
+            onClick: () => {
+              if (!this.actor.isOwner || typeof this.actor.rollSkill !== "function") {
+                ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+                return;
+              }
+              const current = new Essence20ActorAdapter(this.actor).normalize().skills
+                .find((entry) => entry.key === skill.key);
+              if (!current?.essences.includes(essence)) return;
+              const currentSpecialization = specialization
+                ? current.specializations.find((entry) => entry.key === specialization.key) : null;
+              if (specialization && !currentSpecialization) return;
+              const rollSpecialization = currentSpecialization && this.actor.type === "playerCharacter"
+                ? { ...currentSpecialization, shift: current.shift, specialized: true }
+                : currentSpecialization;
+              return this.actor.rollSkill(buildSkillRollDataset(current, rollSpecialization, essence));
             }
-            return this.actor.rollSkill(buildSkillRollDataset(skill));
-          }
-        },
-        { label: formatSkillRank(skill) },
-        { label: formatSkillStatus(skill) }
+          },
+          { label: specialization && this.actor.type !== "playerCharacter"
+            ? specialization.shift : formatSkillRank(skill) },
+          { label: specialization ? (specialization.specialized ? "★" : "—") : formatSkillStatus(skill) }
+        ]);
+      };
+      const buttons = data.skills.flatMap((skill) => skill.essences.flatMap((essence) => [
+        skillButton(skill, essence),
+        ...skill.specializations.map((specialization) => skillButton(skill, essence, specialization))
       ]));
 
       const categories = [{

@@ -36,6 +36,32 @@ test("normalizes NPC defense value fields for all reference tiers", () => {
   assert.deepEqual(results.map(({ defenses }) => defenses.toughness), [12, 18, 12]);
   assert.ok(results.every(({ morph }) => morph.actionAvailable === false));
   assert.ok(results.every(({ actionEconomy }) => actionEconomy === null));
+  assert.ok(results.every(({ skills }) => skills.length === 1));
+});
+
+test("uses beta skill choices, specializations, daily uses, and burrow movement", () => {
+  const actor = {
+    ...boundFixture,
+    system: {
+      ...boundFixture.system,
+      movement: { ...boundFixture.system.movement, burrow: { total: 15 } },
+      skills: {
+        might: { isChosen: true, shift: "d4", essences: { strength: true },
+          specializations: { grapple: { name: "Grapple", shift: "d6", isSpecialized: true } } },
+        targeting: { isChosen: false, essences: { speed: true } }
+      }
+    },
+    items: [{ id: "p", name: "Daily Power", type: "power", system: {
+      usesInterval: "perDay", usesPer: 3, usesSpent: 1
+    } }]
+  };
+  const result = new Essence20ActorAdapter(actor).normalize();
+  assert.equal(result.movement.burrow, 15);
+  assert.deepEqual(result.skills.map(({ key }) => key), ["might"]);
+  assert.deepEqual(result.skills[0].specializations, [{
+    key: "grapple", name: "Grapple", shift: "d6", specialized: true
+  }]);
+  assert.deepEqual(result.powers[0].uses, { interval: "perDay", max: 3, spent: 1 });
 });
 
 test("exposes native Morph for a capable NPC", () => {

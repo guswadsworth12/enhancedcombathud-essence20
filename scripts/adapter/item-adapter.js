@@ -126,7 +126,8 @@ export function normalizePower(item) {
     powerType: system.type ?? null,
     uses: {
       interval: system.usesInterval ?? null,
-      max: system.usesPer ?? null
+      max: system.usesPer ?? null,
+      spent: finiteNumber(system.usesSpent)
     },
     cost: {
       value: system.powerCost ?? null,

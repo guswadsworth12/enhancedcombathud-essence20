@@ -1,6 +1,6 @@
 # Argon - Combat HUD (ESSENCE20)
 
-Private Foundry VTT 14 system adapter for Argon Combat HUD Core 5.x and Essence20 5.1.
+Foundry VTT 14 system adapter for Argon Combat HUD Core 5.x and Essence20 6.0.3-beta.
 
 The module will expose native Essence20 combat actions through Argon's bottom-screen HUD and include an optional Rangers Occult visual theme. It will delegate rolls and state changes to Essence20 rather than reimplementing system rules.
 
@@ -20,12 +20,12 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-Phases 0 and 1 are complete: the adapter opens Argon for a live Essence20 5.1
-`playerCharacter` token, preserves Actor and Item data, and provides runtime
-compatibility guards, localized diagnostics, client debug logging, package
-validation, and a documented development workflow. Phase 2 is building a pure
-normalized actor/item data layer with sanitized fixtures. Gameplay actions and
-the Rangers Occult theme are not implemented yet.
+The beta adapter exposes vitals, skills, embedded weapon effects, Powers,
+utility information, movement, initiative, and Morph controls for owned
+`playerCharacter` and `npc` tokens. It delegates rolls and state changes to
+Essence20. The Rangers Occult theme and full 1.0 acceptance matrix remain in
+development. This version targets the 6.0.3 beta and needs live-world checks
+before release.
 
 See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
 [the Phase 0 spike](docs/PHASE_0_SPIKE.md). Development and release procedures
@@ -33,8 +33,8 @@ are in [the development guide](docs/DEVELOPMENT.md).
 
 ## Target compatibility
 
-- Foundry VTT 14.367
-- Essence20 5.1.0
+- Foundry VTT 14.368
+- Essence20 6.0.3-beta
 - Argon Combat HUD Core 5.0.1
 
 This repository is public. Development releases are experimental and may not

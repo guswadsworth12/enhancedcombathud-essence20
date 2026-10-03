@@ -8,6 +8,7 @@ function skill(essence, shift = "d2", specialized = false) {
     snag: false,
     canCritD2: false,
     isSpecialized: specialized,
+    isChosen: true,
     canBeInitiative: false,
     essences: { [essence]: true }
   };
@@ -16,6 +17,7 @@ function skill(essence, shift = "d2", specialized = false) {
 const movement = (ground) => ({
   ground: { base: ground, bonus: 0, total: ground },
   aerial: { base: 0, bonus: 0, total: 0 },
+  burrow: { base: 0, bonus: 0, total: 0 },
   climb: { base: 0, bonus: 0, total: 0 },
   swim: { base: 0, bonus: 0, total: 0 }
 });

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, as a Foundry VTT 14 adapter for Essence20 5.1 and Argon Core 5.x. Include an optional Rangers Occult theme without modifying either dependency.
+Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, as a Foundry VTT 14 adapter for Essence20 6.0.3-beta and Argon Core 5.x. Include an optional Rangers Occult theme without modifying either dependency.
 
 ## Fixed decisions
 
@@ -55,8 +55,8 @@ Exit when adapter tests are independent of Argon UI code.
   Standard, Standard and Move, Whole Turn, Ten Minutes, and One Hour. Use
   `canActivate` only for sheet-parity visibility/availability; native
   `powerCost` remains authoritative for resource affordability.
-- Do not invent current-use counters for powers: Essence20 5.1 stores declared
-  use frequency and maximum uses but no consumed-use state.
+- Use Essence20's native daily-use tracking where available; do not invent
+  counters for other use frequencies.
 - Delegate every executable action to native Essence20 methods.
 
 Exit when a player can complete a basic combat turn without opening the actor sheet.
@@ -82,7 +82,7 @@ Exit when all 1.0 acceptance criteria pass.
 
 ## 1.0 acceptance criteria
 
-1. Compatible with Foundry 14.367, Essence20 5.1.0, and the pinned Argon 5.x release.
+1. Compatible with Foundry 14.368, Essence20 6.0.3-beta, and the pinned Argon 5.x release.
 2. Opens and switches correctly for `playerCharacter` and `npc` actors.
 3. Displays accurate Health, Defenses, Essences, and movement.
 4. Uses native initiative and skill workflows.
