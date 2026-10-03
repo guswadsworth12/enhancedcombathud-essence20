@@ -21,6 +21,10 @@ const movement = (ground) => ({
   climb: { base: 0, bonus: 0, total: 0 },
   swim: { base: 0, bonus: 0, total: 0 }
 });
+const actions = (free = 0) => ({
+  move: { max: 1 }, standard: { max: 1 }, free: { max: free },
+  shared: false, enabled: true
+});
 
 export const rangerFixture = {
   id: "fixture-ranger",
@@ -41,6 +45,7 @@ export const rangerFixture = {
       smarts: { value: 2, max: 2 }, social: { value: 1, max: 1 }
     },
     movement: movement(30),
+    actions: actions(1),
     initiative: { skill: "initiative", formula: "2d20kl" },
     skills: { athletics: skill("strength", "d4", true), initiative: skill("speed") },
     canMorph: true,
@@ -74,7 +79,8 @@ function npcFixture(id, name, threatLevel, health, defenses) {
         strength: { value: 2, max: 2 }, speed: { value: 2, max: 2 },
         smarts: { value: 1, max: 1 }, social: { value: 1, max: 1 }
       },
-      movement: movement(30), skills: { athletics: skill("strength") }, threatLevel
+      movement: movement(30), actions: actions(),
+      skills: { athletics: skill("strength") }, threatLevel
     },
     items: []
   };

@@ -22,7 +22,7 @@ test("normalizes a player character independently of Argon UI classes", () => {
   assert.equal(result.powers[0].actionType, "standard");
   assert.equal(result.utility[0].type, "perk");
   assert.deepEqual(result.actionEconomy, {
-    movement: 1, standard: 1, free: 1, tracked: false
+    movement: 1, standard: 1, free: 1, shared: false, tracked: true
   });
   assert.equal(result.morph.actionAvailable, true);
 });
@@ -35,8 +35,24 @@ test("normalizes NPC defense value fields for all reference tiers", () => {
   assert.deepEqual(results.map(({ health }) => health.max), [1, 5, 3]);
   assert.deepEqual(results.map(({ defenses }) => defenses.toughness), [12, 18, 12]);
   assert.ok(results.every(({ morph }) => morph.actionAvailable === false));
-  assert.ok(results.every(({ actionEconomy }) => actionEconomy === null));
+  assert.ok(results.every(({ actionEconomy }) => actionEconomy.movement === 1));
   assert.ok(results.every(({ skills }) => skills.length === 1));
+});
+
+test("reads prepared action budgets instead of recomputing them from Speed", () => {
+  const actor = {
+    ...rangerFixture,
+    system: {
+      ...rangerFixture.system,
+      actions: {
+        move: { max: 0 }, standard: { max: 2 }, free: { max: 4 },
+        shared: true, enabled: true
+      }
+    }
+  };
+  assert.deepEqual(new Essence20ActorAdapter(actor).normalize().actionEconomy, {
+    movement: 0, standard: 2, free: 4, shared: true, tracked: true
+  });
 });
 
 test("uses beta skill choices, specializations, daily uses, and burrow movement", () => {

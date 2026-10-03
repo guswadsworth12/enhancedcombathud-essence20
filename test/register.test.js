@@ -17,6 +17,9 @@ class BaseItemButton {
   get classes() { return ["feature-element"]; }
 }
 class BaseButtonPanelButton {}
+class BaseActionButton {
+  get classes() { return ["action-element"]; }
+}
 class BaseButtonHud {}
 class BaseMovementHud {}
 class BaseAccordionPanel {
@@ -35,7 +38,11 @@ function fakeCore() {
       DRAWER: { DrawerPanel: BaseComponent, DrawerButton: BaseDrawerButton },
       MAIN: {
         ActionPanel: BaseComponent,
-        BUTTONS: { ItemButton: BaseItemButton, ButtonPanelButton: BaseButtonPanelButton },
+        BUTTONS: {
+          ItemButton: BaseItemButton,
+          ButtonPanelButton: BaseButtonPanelButton,
+          ActionButton: BaseActionButton
+        },
         BUTTON_PANELS: {
           ACCORDION: {
             AccordionPanel: BaseAccordionPanel,
@@ -65,6 +72,7 @@ test("registers the minimum Argon component set without patching Core", () => {
   assert.equal(CoreHUD.registrations.drawer, components.Essence20DrawerPanel);
   assert.deepEqual(CoreHUD.registrations.main, [
     components.Essence20ActionsPanel,
+    components.Essence20NamedActionsPanel,
     components.Essence20PowersPanel,
     components.Essence20UtilitiesPanel
   ]);

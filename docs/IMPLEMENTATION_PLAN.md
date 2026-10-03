@@ -2,7 +2,7 @@
 
 ## Objective
 
-Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, as a Foundry VTT 14 adapter for Essence20 6.0.3-beta and Argon Core 5.x. Include an optional Rangers Occult theme without modifying either dependency.
+Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, as a Foundry VTT 14 adapter for Essence20 6.0.3-beta and Argon Core 5.x. Give the full HUD a default occult theme with a plain option, without modifying either dependency.
 
 ## Fixed decisions
 
@@ -67,12 +67,12 @@ Exit when a player can complete a basic combat turn without opening the actor sh
 
 Exit when the GM can run Bound, Redactor, and Stitcher consecutively and a Ranger can Morph without stale HUD state.
 
-### 5. Rangers Occult theme
+### 5. Full occult theme
 
-- Smoked obsidian, aged brass, bone-white type, controlled teal-violet glow, Ranger-color accents, original occult seal assets, defense talismans, ritual-card panels, effect seals, field-guide tooltips, and summoning-circle target marker.
+- Smoked obsidian, aged brass, bone-white type, controlled teal-violet glow, actor-color accents, original occult seal assets, defense talismans, ritual-card panels, effect seals, field-guide tooltips, and summoning-circle target marker.
 - Add high contrast, reduced motion, scale, opacity, glow, and theme settings.
 
-Exit when disabling the theme restores default Argon styling and accessibility remains intact.
+Exit when switching to the plain theme restores an Argon-aligned appearance and accessibility remains intact.
 
 ### 6. Hardening and release
 

@@ -5,7 +5,7 @@ import {
 import { inspectGameCompatibility } from "./compatibility.js";
 import { createLogger } from "./logger.js";
 import { registerEssence20Hud } from "./register.js";
-import { registerSettings } from "./settings.js";
+import { applyThemeSettings, registerSettings } from "./settings.js";
 
 let compatibilityIssues = [];
 let logger;
@@ -24,6 +24,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", () => {
+  applyThemeSettings(game);
   for (const issue of compatibilityIssues) {
     const message = game.i18n.format(`ECHESSENCE20.Errors.${issue.key}`, issue.values);
     logger.error(message);

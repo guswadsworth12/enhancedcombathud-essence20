@@ -4,6 +4,9 @@
       "Title": "Actions",
       "Weapons": "Weapons",
       "Powers": "Powers",
+      "TurnActions": "Turn actions",
+      "TrackOnly": "mark only",
+      "TrackOnlyHint": "Records the action cost. Resolve this action at the table.",
       "Utilities": "Utility",
       "Initiative": "Initiative",
       "Morph": "Morph",
@@ -57,7 +60,7 @@
       "ArgonRegistration": "Argon - Combat HUD (ESSENCE20) could not register with Argon Core. Check the browser console for details.",
       "FoundryVersion": "Argon - Combat HUD (ESSENCE20) requires Foundry 14; detected {version}. Disable the adapter or use a supported Foundry version.",
       "SystemId": "Argon - Combat HUD (ESSENCE20) requires the Essence20 system; detected {systemId}.",
-      "SystemVersion": "Argon - Combat HUD (ESSENCE20) supports Essence20 5.1.x; detected {version}.",
+      "SystemVersion": "Argon - Combat HUD (ESSENCE20) supports Essence20 6.0.3-beta; detected {version}.",
       "ArgonInactive": "Argon - Combat HUD (CORE) must be installed and enabled before the Essence20 adapter.",
       "ArgonVersion": "Argon - Combat HUD (ESSENCE20) supports Argon Core 5.x; detected {version}.",
       "NotOwner": "You do not have permission to roll for this actor.",
@@ -65,6 +68,14 @@
       "PowerUnavailable": "This power cannot currently be activated."
     },
     "Tooltips": {
+      "Action": "Action",
+      "Cost": "Cost",
+      "Variable": "Variable",
+      "UsesRemaining": "Uses remaining",
+      "Skill": "Skill",
+      "Targets": "Targets",
+      "Reach": "Reach",
+      "Range": "Range",
       "Active": "Active",
       "Equipped": "Equipped",
       "Quantity": "Quantity",
@@ -73,6 +84,31 @@
       "No": "No"
     },
     "Settings": {
+      "Theme": {
+        "Name": "HUD theme", "Hint": "Choose the occult HUD or a plain Argon-aligned appearance.",
+        "Occult": "Occult", "Plain": "Plain"
+      },
+      "Density": {
+        "Name": "HUD spacing", "Hint": "Choose comfortable or compact spacing.",
+        "Comfortable": "Comfortable", "Compact": "Compact"
+      },
+      "Opacity": {
+        "Name": "HUD panel opacity", "Hint": "Adjust how much of the scene shows through HUD panels."
+      },
+      "Glow": {
+        "Name": "Occult glow", "Hint": "Adjust the strength of decorative glow; zero removes it."
+      },
+      "Contrast": {
+        "Name": "High contrast HUD", "Hint": "Use solid panels, brighter borders, and stronger focus outlines."
+      },
+      "Motion": {
+        "Name": "HUD motion", "Hint": "Follow the system motion preference or reduce HUD animation.",
+        "System": "System preference", "Reduced": "Reduced"
+      },
+      "Accent": {
+        "Name": "Occult accent", "Hint": "Choose the principal accent color for HUD borders and focus.",
+        "Brass": "Aged brass", "Teal": "Ritual teal", "Violet": "Arcane violet"
+      },
       "DebugLogging": {
         "Name": "Enable debug logging",
         "Hint": "Write additional Essence20 adapter diagnostics to the browser console."

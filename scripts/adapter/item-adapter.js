@@ -79,7 +79,7 @@ export function normalizeWeapon(item, allItems, claimedEffectIds = new Set()) {
       claimedEffectIds.add(itemId(candidate));
       return true;
     })
-    .map(normalizeWeaponEffect);
+    .map((effect) => ({ ...normalizeWeaponEffect(effect), weaponName: item.name ?? "" }));
 
   const resolvedIds = new Set(effects.map((effect) => effect.id));
   for (const entry of cachedEntries) {

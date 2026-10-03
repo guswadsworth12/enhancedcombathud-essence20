@@ -2,7 +2,7 @@
 
 Foundry VTT 14 system adapter for Argon Combat HUD Core 5.x and Essence20 6.0.3-beta.
 
-The module will expose native Essence20 combat actions through Argon's bottom-screen HUD and include an optional Rangers Occult visual theme. It will delegate rolls and state changes to Essence20 rather than reimplementing system rules.
+The module exposes native Essence20 combat actions through Argon's bottom-screen HUD with a full occult visual theme by default. It delegates rolls and state changes to Essence20 rather than reimplementing system rules.
 
 ## Initial scope
 
@@ -14,18 +14,23 @@ The module will expose native Essence20 combat actions through Argon's bottom-sc
 - Perks, Hang-Ups, Traits, gear, and enriched tooltips
 - Native Morph controls in 1.0
 - GM token switching and player ownership enforcement
-- Default and Rangers Occult themes with accessibility settings
+- Occult and plain themes with client-side accessibility settings
 
 Story Point controls are intentionally excluded because a separate module remains authoritative.
 
 ## Status
 
-The beta adapter exposes vitals, skills, embedded weapon effects, Powers,
-utility information, movement, initiative, and Morph controls for owned
-`playerCharacter` and `npc` tokens. It delegates rolls and state changes to
-Essence20. The Rangers Occult theme and full 1.0 acceptance matrix remain in
-development. This version targets the 6.0.3 beta and needs live-world checks
-before release.
+The dev.21 preview adds prepared action budgets, native turn-action controls,
+keyboard access for HUD buttons, Power availability and daily-use display,
+and an original occult theme. The full 1.0 acceptance matrix remains in
+development. This version targets the 6.0.3 beta and needs live-world checks.
+
+The occult theme is the default. Client settings provide a plain theme,
+comfortable/compact spacing, panel opacity, glow, high contrast, reduced
+motion, and brass/teal/violet accents. Argon Core's own **HUD Scale** setting
+controls overall size; start around 0.75 if the default appears too small.
+The vector seals in `assets/` were created for this module and use this
+repository's license.
 
 See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
 [the Phase 0 spike](docs/PHASE_0_SPIKE.md). Development and release procedures
