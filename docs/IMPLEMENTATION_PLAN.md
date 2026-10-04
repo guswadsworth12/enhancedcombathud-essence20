@@ -24,7 +24,7 @@ Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, 
 - [#5 Full occult theme](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/5): finish cohesive original assets and review every panel and target marker in Foundry.
 - [#6 Hardening and 1.0](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/6): complete the [live acceptance matrix](LIVE_TEST_MATRIX.md), module conflict and rollback checks, packaging, and release.
 
-The dev.22 preview implements the first pass across these stages. Draft PR #7 stays open until the live acceptance matrix passes.
+The dev.23 preview implements the first pass across these stages. Draft PR #7 stays open until the live acceptance matrix passes.
 
 ## Phases
 

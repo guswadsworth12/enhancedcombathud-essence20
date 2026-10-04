@@ -20,7 +20,7 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-The dev.22 preview adds prepared action budgets, native turn-action controls,
+The dev.23 preview adds prepared action budgets, native turn-action controls,
 keyboard access for HUD buttons, Power availability and daily-use display,
 and an original occult theme. The full 1.0 acceptance matrix remains in
 development. This version targets the 6.0.3 beta and needs live-world checks.

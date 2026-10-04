@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-dev.23
+
+- Read Power daily-use limits from the beta system, including modified limits.
+- Match the beta actor sheet's skill-roll dataset and make disabled weapon effects keyboard accessible.
+- Publish the staged issue map and live acceptance matrix.
+
 ## 0.1.0-dev.22
 
 - Resolve action allowance labels and clarify system-provided turn budgets.
