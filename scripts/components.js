@@ -62,6 +62,7 @@ function escapeHtml(value) {
 
 export function buildSkillRollDataset(skill, specialization = null, essence = skill.essences[0]) {
   return {
+    rollType: "skill",
     skill: skill.key,
     essence: essence ?? "",
     shift: specialization?.shift ?? skill.shift,

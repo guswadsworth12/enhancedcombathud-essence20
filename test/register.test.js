@@ -176,6 +176,7 @@ test("skill drawer delegates owned rolls to the native actor method", () => {
   assert.ok(actions.buttons.every((button) => button.buttons[2].label === "ECHESSENCE20.Drawer.Prepared"));
   assert.equal(category.buttons.length, 2);
   assert.deepEqual(dataset, {
+    rollType: "skill",
     skill: "athletics",
     essence: "strength",
     shift: "d4",

@@ -29,6 +29,7 @@ const skill = {
 
 test("builds the native Essence20 skill-roll dataset", () => {
   assert.deepEqual(buildSkillRollDataset(skill), {
+    rollType: "skill",
     skill: "athletics",
     essence: "strength",
     shift: "d4",
@@ -67,7 +68,7 @@ test("passes beta specialization keys to the native skill roll", () => {
   assert.deepEqual(buildSkillRollDataset(skill, {
     key: "climbing", name: "Climbing", shift: "d6", specialized: true
   }), {
-    skill: "athletics", essence: "strength", shift: "d6", shiftUp: 1,
+    rollType: "skill", skill: "athletics", essence: "strength", shift: "d6", shiftUp: 1,
     shiftDown: 0, isSpecialized: true, canCritD2: true,
     specializationKey: "climbing", specializationName: "Climbing"
   });
