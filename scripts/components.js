@@ -429,6 +429,25 @@ export function createComponents(ARGON) {
     get icon() { return this.effect.img; }
     get visible() { return true; }
     get classes() { return ["essence20-disabled-action"]; }
+    get hasTooltip() { return true; }
+
+    async getTooltipData() {
+      return {
+        title: escapeHtml(this.label),
+        subtitle: game.i18n.localize("ECHESSENCE20.Actions.Weapons"),
+        description: game.i18n.localize("ECHESSENCE20.Errors.UnmatchedWeaponEffect"),
+        details: [],
+        propertiesLabel: "ECHESSENCE20.Tooltips.Properties",
+        properties: [],
+        footerText: ""
+      };
+    }
+
+    async activateListeners(element) {
+      await super.activateListeners(element);
+      keyboardAction(element, `${this.label}, ${game.i18n.localize(
+        "ECHESSENCE20.Errors.UnmatchedWeaponEffect")}`, () => this._onLeftClick());
+    }
 
     _onLeftClick() {
       ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.UnmatchedWeaponEffect"));

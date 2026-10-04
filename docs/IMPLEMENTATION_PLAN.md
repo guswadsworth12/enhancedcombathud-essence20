@@ -9,14 +9,22 @@ Build `enhancedcombathud-essence20`, titled **Argon - Combat HUD (ESSENCE20)**, 
 - Use Argon's supported system-adapter model rather than imitate or fork its HUD.
 - Keep all Essence20 field access behind adapter classes.
 - Invoke native `actor.rollSkill`, `actor.rollInitiative`, weapon-effect Item
-  roll, exported `powerCost(actor, power)`, and `actor.morph()` behavior.
+  roll, Power activation helpers, turn-action ledger, and `actor.morph()` behavior.
 - Support `playerCharacter` and `npc` before vehicles, Zords, and megaforms.
 - Treat embedded `weaponEffect` Items as first-class HUD actions. Resolve them from
   `actor.items` by their `flags.essence20.parentId` link to the owning weapon; do
   not execute the weapon's denormalized `system.items` display cache.
 - Include Morph controls in 1.0.
 - Exclude Story Point controls; the dedicated Story Points module remains authoritative.
-- Keep the repository private during initial development.
+
+## Delivery stages
+
+- [#3 Native combat and Morph](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/3): finish live rolls, initiative, turn actions, Power spending, Morph, and ownership checks.
+- [#4 Readability and customization](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/4): verify typography, focus, tooltips, density, high contrast, and Argon Core scale.
+- [#5 Full occult theme](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/5): finish cohesive original assets and review every panel and target marker in Foundry.
+- [#6 Hardening and 1.0](https://github.com/guswadsworth12/enhancedcombathud-essence20/issues/6): complete the [live acceptance matrix](LIVE_TEST_MATRIX.md), module conflict and rollback checks, packaging, and release.
+
+The dev.22 preview implements the first pass across these stages. Draft PR #7 stays open until the live acceptance matrix passes.
 
 ## Phases
 
@@ -63,14 +71,14 @@ Exit when a player can complete a basic combat turn without opening the actor sh
 
 ### 4. GM workflow and Morph controls
 
-- Fast token switching, NPC-ready defaults, advisory action tracking, movement display, target-count guidance, native Morph controls, and mixed ownership tests.
+- Fast token switching, NPC-ready defaults, native turn-action tracking, movement display, target-count guidance, native Morph controls, and mixed ownership tests.
 
 Exit when the GM can run Bound, Redactor, and Stitcher consecutively and a Ranger can Morph without stale HUD state.
 
 ### 5. Full occult theme
 
 - Smoked obsidian, aged brass, bone-white type, controlled teal-violet glow, actor-color accents, original occult seal assets, defense talismans, ritual-card panels, effect seals, field-guide tooltips, and summoning-circle target marker.
-- Add high contrast, reduced motion, scale, opacity, glow, and theme settings.
+- Add high contrast, reduced motion, opacity, glow, and theme settings; use Argon Core's scale control.
 
 Exit when switching to the plain theme restores an Argon-aligned appearance and accessibility remains intact.
 
@@ -90,7 +98,7 @@ Exit when all 1.0 acceptance criteria pass.
 6. Groups powers by action type and shows availability/use frequency.
 7. Enforces player ownership and GM authority.
 8. Runs the three Concordance NPCs without opening their sheets.
-9. Provides usable default and Rangers Occult themes.
+9. Provides usable occult and plain themes.
 10. Supports native Morph and return behavior without stale state.
 11. Passes high-contrast and reduced-motion review.
 12. Produces no persistent errors, duplicate hooks, duplicate HUDs, or stale actor state.
