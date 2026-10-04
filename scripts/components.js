@@ -11,6 +11,7 @@ const STAT_COLORS = Object.freeze({
 const REPORTED_DIAGNOSTICS = new Set();
 const POWER_HANDLER_PATH = "/systems/essence20/module/sheet-handlers/power-handler.mjs";
 const POWER_USE_PATH = "/systems/essence20/module/helpers/power-use.mjs";
+const POWER_DAILY_USES_PATH = "/systems/essence20/module/helpers/nanomite-uses.mjs";
 const ITEM_USE_PATH = "/systems/essence20/module/helpers/banked-buffs.mjs";
 const ACTION_ECONOMY_PATH = "/systems/essence20/module/helpers/action-economy.mjs";
 const NAMED_ACTIONS_PATH = "/systems/essence20/module/helpers/named-actions.mjs";
@@ -57,13 +58,6 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
-}
-
-export function powerUsesRemaining(system = {}) {
-  if (system.usesInterval !== "perDay") return null;
-  const maximum = Number(system.usesPer);
-  if (!Number.isFinite(maximum) || maximum <= 0) return null;
-  return Math.max(0, maximum - (Number(system.usesSpent) || 0));
 }
 
 export function buildSkillRollDataset(skill, specialization = null, essence = skill.essences[0]) {
@@ -460,7 +454,7 @@ export function createComponents(ARGON) {
       this.power = power;
     }
 
-    get quantity() { return powerUsesRemaining(this.item?.system); }
+    get quantity() { return this._dailyUses?.remaining ?? null; }
     get icon() {
       const icon = this.item?.img;
       return icon?.endsWith("/powers.svg")
@@ -470,7 +464,6 @@ export function createComponents(ARGON) {
 
     async getTooltipData() {
       const system = this.item?.system ?? {};
-      const remaining = powerUsesRemaining(system);
       const details = [
         { label: "ECHESSENCE20.Tooltips.Action", value: game.i18n.localize(
           `ECHESSENCE20.Actions.PowerTypes.${this.power.actionType}`) },
@@ -478,9 +471,9 @@ export function createComponents(ARGON) {
           ? game.i18n.localize("ECHESSENCE20.Tooltips.Variable")
           : (system.powerCost ?? 0) }
       ];
-      if (remaining !== null) details.push({
+      if (this._dailyUses) details.push({
         label: "ECHESSENCE20.Tooltips.UsesRemaining",
-        value: `${remaining}/${system.usesPer}`
+        value: `${this._dailyUses.remaining}/${this._dailyUses.max}`
       });
       return {
         title: escapeHtml(this.item.name),
@@ -497,9 +490,13 @@ export function createComponents(ARGON) {
     }
 
     async _renderInner() {
-      const [{ canUsePower }, { hasItemUse, canUsePerk }] = await Promise.all([
-        import(POWER_USE_PATH), import(ITEM_USE_PATH)
+      const [{ canUsePower }, { hasItemUse, canUsePerk }, daily] = await Promise.all([
+        import(POWER_USE_PATH), import(ITEM_USE_PATH), import(POWER_DAILY_USES_PATH)
       ]);
+      this._dailyUses = daily.tracksDailyUses(this.item) ? {
+        remaining: daily.getDailyUsesLeft(this.actor, this.item),
+        max: daily.getDailyUsesMax(this.actor, this.item)
+      } : null;
       this._available = hasItemUse(this.item) ? canUsePerk(this.item) : canUsePower(this.item);
       await super._renderInner();
       this.element.classList.toggle("essence20-disabled-action", !this._available);
@@ -509,7 +506,6 @@ export function createComponents(ARGON) {
     async activateListeners(element) {
       await super.activateListeners(element);
       const system = this.item?.system ?? {};
-      const remaining = powerUsesRemaining(system);
       const cost = system.hasVariableCost
         ? game.i18n.localize("ECHESSENCE20.Tooltips.Variable")
         : (system.powerCost ?? 0);
@@ -517,8 +513,8 @@ export function createComponents(ARGON) {
         this.label,
         game.i18n.localize(`ECHESSENCE20.Actions.PowerTypes.${this.power.actionType}`),
         `${game.i18n.localize("ECHESSENCE20.Tooltips.Cost")}: ${cost}`,
-        remaining === null ? null
-          : `${game.i18n.localize("ECHESSENCE20.Tooltips.UsesRemaining")}: ${remaining}`,
+        !this._dailyUses ? null
+          : `${game.i18n.localize("ECHESSENCE20.Tooltips.UsesRemaining")}: ${this._dailyUses.remaining}`,
         game.i18n.localize(`ECHESSENCE20.Tooltips.${this._available ? "Available" : "Unavailable"}`)
       ].filter(Boolean).join(", ");
       keyboardAction(element, label, (event) => this._onPreLeftClick(event));

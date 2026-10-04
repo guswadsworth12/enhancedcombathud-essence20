@@ -7,7 +7,6 @@ import {
   formatSkillRank,
   formatSkillStatus,
   movementSpaces,
-  powerUsesRemaining,
   rollInitiative,
   runNamedHudAction,
   showUtilityInfo,
@@ -62,12 +61,6 @@ test("converts Essence20 movement modes to scene spaces", () => {
   assert.equal(movementSpaces(actor, "burrow", 5), 0);
   assert.equal(movementSpaces(actor, "unknown", 5), 6);
   assert.equal(movementSpaces(actor, "walk", 0), 0);
-});
-
-test("shows only native daily Power uses as a remaining counter", () => {
-  assert.equal(powerUsesRemaining({ usesInterval: "perDay", usesPer: 3, usesSpent: 1 }), 2);
-  assert.equal(powerUsesRemaining({ usesInterval: "perDay", usesPer: 3, usesSpent: 9 }), 0);
-  assert.equal(powerUsesRemaining({ usesInterval: "perScene", usesPer: 3 }), null);
 });
 
 test("passes beta specialization keys to the native skill roll", () => {
