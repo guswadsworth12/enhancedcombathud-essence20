@@ -52,14 +52,14 @@ function normalizeSkills(skills = {}, actorType) {
     }));
 }
 
-function normalizeActionEconomy(actorType, essences = {}) {
-  if (actorType !== "playerCharacter") return null;
-  const speed = finiteNumber(essences.speed?.max);
+function normalizeActionEconomy(actions) {
+  if (!actions?.move || !actions?.standard || !actions?.free) return null;
   return {
-    movement: speed > 0 ? 1 : 0,
-    standard: speed > 1 ? 1 : 0,
-    free: Math.max(0, speed - 2),
-    tracked: false
+    movement: finiteNumber(actions.move.max),
+    standard: finiteNumber(actions.standard.max),
+    free: finiteNumber(actions.free.max),
+    shared: Boolean(actions.shared),
+    tracked: Boolean(actions.enabled)
   };
 }
 
@@ -109,7 +109,7 @@ export class Essence20ActorAdapter {
         skill: system.initiative?.skill ?? "initiative",
         formula: system.initiative?.formula ?? null
       },
-      actionEconomy: normalizeActionEconomy(actor.type, system.essences),
+      actionEconomy: normalizeActionEconomy(system.actions),
       skills: normalizeSkills(system.skills, actor.type),
       weapons,
       unmatchedWeaponEffects,

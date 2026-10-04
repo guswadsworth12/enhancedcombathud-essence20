@@ -1,0 +1,29 @@
+# Changelog
+
+## 0.1.0-dev.23
+
+- Read Power daily-use limits from the beta system, including modified limits.
+- Match the beta actor sheet's skill-roll dataset and make disabled weapon effects keyboard accessible.
+- Publish the staged issue map and live acceptance matrix.
+
+## 0.1.0-dev.22
+
+- Resolve action allowance labels and clarify system-provided turn budgets.
+- Add original sigils for generic weapon, Power, and utility art while keeping custom art.
+- Check actor ownership before target selection and info/Power use.
+- Improve keyboard labels, focus, portrait cues, and readable scale guidance.
+
+Live action, Morph, and permissions checks remain open in the acceptance matrix.
+
+## 0.1.0-dev.21
+
+- Read the beta system's prepared action budgets and expose native turn actions during combat.
+- Add Power availability, tracked daily uses, action details, and keyboard access to HUD controls.
+- Add the default occult theme, original vector seals, and per-client appearance settings.
+- Improve tooltip text handling and correct the Essence20 compatibility message.
+
+This is a development preview. Native action, Morph, and visual workflows still require live testing before 1.0.
+
+## 0.1.0-dev.20
+
+- Adapt the HUD to Essence20 6.0.3-beta and Foundry 14.

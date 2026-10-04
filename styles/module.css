@@ -10,6 +10,11 @@
   opacity: 0.55;
 }
 
+.extended-combat-hud:has(.essence20-portrait-hud) [role="button"]:focus-visible {
+  outline: 3px solid #f5d89f;
+  outline-offset: 3px;
+}
+
 .extended-combat-hud .essence20-portrait-hud {
   flex: 0 0 375px;
   width: 375px;
@@ -20,14 +25,14 @@
   border-color: var(--ech-portrait-base-border);
   bottom: 0.5rem;
   display: grid;
-  font-size: 0.75rem;
+  font-size: 1rem;
   gap: 0.25rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
   padding: 0.4rem;
   position: absolute;
   right: 0.5rem;
-  width: 10.5rem;
+  width: 11.5rem;
 }
 
 .extended-combat-hud .essence20-portrait-hud .essence20-stat-grid span {

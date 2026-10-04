@@ -9,6 +9,7 @@ export function registerEssence20Hud(CoreHUD) {
   CoreHUD.defineDrawerPanel(components.Essence20DrawerPanel);
   CoreHUD.defineMainPanels([
     components.Essence20ActionsPanel,
+    components.Essence20NamedActionsPanel,
     components.Essence20PowersPanel,
     components.Essence20UtilitiesPanel
   ]);

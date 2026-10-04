@@ -8,6 +8,7 @@ import {
   formatSkillStatus,
   movementSpaces,
   rollInitiative,
+  runNamedHudAction,
   showUtilityInfo,
   toggleMorph
 } from "../scripts/components.js";
@@ -28,6 +29,7 @@ const skill = {
 
 test("builds the native Essence20 skill-roll dataset", () => {
   assert.deepEqual(buildSkillRollDataset(skill), {
+    rollType: "skill",
     skill: "athletics",
     essence: "strength",
     shift: "d4",
@@ -66,7 +68,7 @@ test("passes beta specialization keys to the native skill roll", () => {
   assert.deepEqual(buildSkillRollDataset(skill, {
     key: "climbing", name: "Climbing", shift: "d6", specialized: true
   }), {
-    skill: "athletics", essence: "strength", shift: "d6", shiftUp: 1,
+    rollType: "skill", skill: "athletics", essence: "strength", shift: "d6", shiftUp: 1,
     shiftDown: 0, isSpecialized: true, canCritD2: true,
     specializationKey: "climbing", specializationName: "Climbing"
   });
@@ -183,6 +185,38 @@ test("unavailable Powers do not roll or spend", async () => {
   assert.equal(warning, "ECHESSENCE20.Errors.PowerUnavailable");
 });
 
+test("named action spends through the native ledger and refunds a cancelled effect", async () => {
+  const actor = { name: "Fixture Ranger", isOwner: true };
+  const calls = [];
+  globalThis.game = { i18n: { localize: (key) => key, format: (key) => key } };
+  globalThis.ui = { notifications: { warn() {} }, ARGON: { refresh() { calls.push("refresh"); } } };
+  const economy = {
+    getActionsTabContext: () => ({ live: true, groups: [{ actions: [{
+      key: "defend", label: "E20.ActionDefend"
+    }] }] }),
+    isAiming: () => false,
+    getNamedActionType: () => "standard",
+    spend: (...args) => { calls.push(args); return { blocked: false, spendId: "spent-1" }; },
+    refund: (...args) => { calls.push(args); }
+  };
+  await runNamedHudAction(actor, "defend", async (path) => path.includes("action-economy")
+    ? economy : { runNamedAction: () => ({ cancelled: true }) });
+  assert.deepEqual(calls, [
+    [actor, "standard", { source: "E20.ActionDefend", context: { key: "defend" } }],
+    [actor, "spent-1"], "refresh"
+  ]);
+});
+
+test("named actions refuse non-owner calls before touching the native ledger", async () => {
+  let imported = false;
+  let warning = null;
+  globalThis.game = { i18n: { localize: (key) => key } };
+  globalThis.ui = { notifications: { warn: (message) => { warning = message; } } };
+  await runNamedHudAction({ isOwner: false }, "defend", async () => { imported = true; });
+  assert.equal(imported, false);
+  assert.equal(warning, "ECHESSENCE20.Errors.NotOwner");
+});
+
 test("builds an enriched Argon tooltip for utility Items", async () => {
   globalThis.game = { i18n: { localize: (key) => key } };
   const data = await buildUtilityTooltipData({
@@ -205,6 +239,18 @@ test("builds an enriched Argon tooltip for utility Items", async () => {
     "ECHESSENCE20.Tooltips.No"
   ]);
   assert.deepEqual(data.properties.map(({ label }) => label), ["light", "deflective"]);
+});
+
+test("escapes player-controlled tooltip text", async () => {
+  globalThis.game = { i18n: { localize: (key) => key } };
+  const data = await buildUtilityTooltipData({
+    name: '<img src=x onerror=alert(1)>', type: "gear", description: "",
+    equipped: null, active: null, quantity: null,
+    classification: '<b>magic</b>', traits: [], source: 'A&B', document: {}
+  }, async () => "");
+  assert.equal(data.title, '&lt;img src=x onerror=alert(1)&gt;');
+  assert.equal(data.properties[0].label, '&lt;b&gt;magic&lt;/b&gt;');
+  assert.equal(data.footerText, 'A&amp;B');
 });
 
 test("utility information refuses non-owner calls", async () => {
