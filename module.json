@@ -2,7 +2,7 @@
   "id": "enhancedcombathud-essence20",
   "title": "Argon - Combat HUD (ESSENCE20)",
   "description": "Occult Essence20 6.0.3 beta adapter for Argon - Combat HUD (CORE).",
-  "version": "0.1.0-dev.21",
+  "version": "0.1.0-dev.22",
   "authors": [
     {
       "name": "guswadsworth12",
@@ -45,8 +45,8 @@
     }
   ],
   "url": "https://github.com/guswadsworth12/enhancedcombathud-essence20",
-  "manifest": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.21/module.json",
-  "download": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.21/enhancedcombathud-essence20-v0.1.0-dev.21.zip",
+  "manifest": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.22/module.json",
+  "download": "https://github.com/guswadsworth12/enhancedcombathud-essence20/releases/download/v0.1.0-dev.22/enhancedcombathud-essence20-v0.1.0-dev.22.zip",
   "license": "LICENSE",
   "readme": "README.md"
 }

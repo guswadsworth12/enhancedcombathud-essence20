@@ -20,7 +20,7 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-The dev.21 preview adds prepared action budgets, native turn-action controls,
+The dev.22 preview adds prepared action budgets, native turn-action controls,
 keyboard access for HUD buttons, Power availability and daily-use display,
 and an original occult theme. The full 1.0 acceptance matrix remains in
 development. This version targets the 6.0.3 beta and needs live-world checks.
@@ -28,7 +28,8 @@ development. This version targets the 6.0.3 beta and needs live-world checks.
 The occult theme is the default. Client settings provide a plain theme,
 comfortable/compact spacing, panel opacity, glow, high contrast, reduced
 motion, and brass/teal/violet accents. Argon Core's own **HUD Scale** setting
-controls overall size; start around 0.75 if the default appears too small.
+controls overall size. For a 1080p-sized window, turn off Argon Core's
+**Auto Scale** and start around 0.7–0.8; Auto Scale uses a much smaller size.
 The vector seals in `assets/` were created for this module and use this
 repository's license.
 

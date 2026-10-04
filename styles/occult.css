@@ -30,8 +30,9 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud:has(.essence20-port
   --ech-movement-baseMovement-background: #58bdb7;
   --ech-movement-dashMovement-background: #d4ad70;
   --ech-movement-dangerMovement-background: #bd7480;
+  --ech-font-family: system-ui, sans-serif;
   color: var(--ech20-ink);
-  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-family: system-ui, sans-serif;
 }
 
 html[data-ech-essence20-accent="teal"] .extended-combat-hud:has(.essence20-portrait-hud) {
@@ -61,6 +62,16 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait
   width: 15rem;
 }
 
+html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait-hud.essence20-morphed {
+  border-color: #d2abea;
+  box-shadow: 0 0 var(--ech20-glow, 4px) #d2abea, inset 0 0 26px #070910;
+}
+
+html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait-hud.essence20-morphed::before {
+  opacity: 0.28;
+  transform: rotate(45deg);
+}
+
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait-hud .portrait-hud-image {
   border: 3px double var(--ech20-actor-color, var(--ech20-accent));
   box-shadow: 0 0 var(--ech20-glow, 4px) var(--ech20-actor-color, var(--ech20-accent));
@@ -68,6 +79,7 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait
 
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-portrait-hud .player-name {
   color: var(--ech20-ink);
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
   font-size: 1.4rem;
   font-weight: 700;
 }
@@ -108,6 +120,7 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud :is(
   .essence20-ability-menu .ability-title, .feature-accordion-title
 ) {
   color: var(--ech20-accent);
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
@@ -141,6 +154,10 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-powers-c
 
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-turn-actions-container > .action-element {
   background-image: url("../assets/action-sigil.svg") !important;
+}
+
+html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-utilities-container > .action-element {
+  background-image: url("../assets/utility-sigil.svg") !important;
 }
 
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .movement-hud {
@@ -202,6 +219,10 @@ html[data-ech-essence20-contrast="true"] .extended-combat-hud .essence20-disable
   filter: none;
   opacity: 1;
   text-decoration: line-through;
+}
+
+html[data-ech-essence20-contrast="true"] .extended-combat-hud .essence20-portrait-hud {
+  --ech20-actor-color: #f3d697 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

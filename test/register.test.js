@@ -173,7 +173,7 @@ test("skill drawer delegates owned rolls to the native actor method", () => {
   category.buttons[0].buttons[0].onClick();
 
   assert.deepEqual(actions.buttons.map((button) => button.buttons[1].label), ["1", "1", "1"]);
-  assert.ok(actions.buttons.every((button) => button.buttons[2].label === "ECHESSENCE20.Drawer.Advisory"));
+  assert.ok(actions.buttons.every((button) => button.buttons[2].label === "ECHESSENCE20.Drawer.Prepared"));
   assert.equal(category.buttons.length, 2);
   assert.deepEqual(dataset, {
     skill: "athletics",
@@ -222,6 +222,7 @@ test("action panel exposes equipped live weapon effects", async () => {
     ...rangerFixture,
     items: rangerFixture.items.map((item) => item.type === "weaponEffect" ? effect : item)
   };
+  effect.parent = actor;
   const components = registerEssence20Hud(fakeCore());
   const panel = new components.Essence20ActionsPanel();
   panel.actor = actor;
@@ -236,6 +237,36 @@ test("action panel exposes equipped live weapon effects", async () => {
   assert.deepEqual(buttons[0].ranges, { normal: null, long: null });
   assert.equal(buttons[0].targets, 1);
   assert.deepEqual(rolledWith, { rollType: "weaponEffect" });
+});
+
+test("generic beta item art uses the module sigils and custom art stays intact", async () => {
+  const items = rangerFixture.items.map((item) => ({
+    ...item,
+    img: item.type === "weaponEffect" ? "systems/essence20/assets/icons/items/weapon_effect.svg"
+      : item.type === "power" ? "systems/essence20/assets/icons/items/powers.svg"
+        : item.type === "perk" ? "systems/essence20/assets/icons/items/perk.svg" : item.img
+  }));
+  const actor = { ...rangerFixture, items };
+  const components = registerEssence20Hud(fakeCore());
+  const weapons = new components.Essence20ActionsPanel();
+  weapons.actor = actor;
+  const powers = new components.Essence20PowersPanel();
+  powers.actor = actor;
+  const utilities = new components.Essence20UtilitiesPanel();
+  utilities.actor = actor;
+
+  const [weapon] = await weapons._getButtons();
+  const [powerPanel] = await powers._getButtons();
+  powerPanel.actor = actor;
+  const [utilityPanel] = await utilities._getButtons();
+  utilityPanel.actor = actor;
+  const [power] = (await powerPanel._getPanel()).accordionPanelCategories[0].buttons;
+  const [perk] = (await utilityPanel._getPanel()).accordionPanelCategories[0].buttons;
+  assert.match(weapon.icon, /weapon-sigil\.svg$/);
+  assert.match(power.icon, /power-sigil\.svg$/);
+  assert.match(perk.icon, /utility-sigil\.svg$/);
+  power.item.img = "custom/power-portrait.webp";
+  assert.equal(power.icon, "custom/power-portrait.webp");
 });
 
 test("action panel shows an unmatched effect as disabled and never rolls it", async () => {
@@ -298,6 +329,7 @@ test("powers remain visible and right-click only posts information", async () =>
     roll(value) { dataset = value; }
   };
   const actor = { ...rangerFixture, items: [power] };
+  power.parent = actor;
   const components = registerEssence20Hud(fakeCore());
   const panel = new components.Essence20PowersPanel();
   panel.actor = actor;
@@ -322,6 +354,7 @@ test("utility accordion groups information-only Items and uses native info rolls
     roll(value) { dataset = value; }
   };
   const actor = { ...rangerFixture, items: [perk] };
+  perk.parent = actor;
   const components = registerEssence20Hud(fakeCore());
   const panel = new components.Essence20UtilitiesPanel();
   panel.actor = actor;

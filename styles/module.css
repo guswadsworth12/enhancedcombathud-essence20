@@ -10,6 +10,11 @@
   opacity: 0.55;
 }
 
+.extended-combat-hud:has(.essence20-portrait-hud) [role="button"]:focus-visible {
+  outline: 3px solid #f5d89f;
+  outline-offset: 3px;
+}
+
 .extended-combat-hud .essence20-portrait-hud {
   flex: 0 0 375px;
   width: 375px;

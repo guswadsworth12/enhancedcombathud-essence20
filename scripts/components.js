@@ -44,6 +44,7 @@ function keyboardAction(element, label, activate) {
   element.tabIndex = 0;
   element.setAttribute("role", "button");
   element.setAttribute("aria-label", label);
+  element.title = label;
   element.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
@@ -204,7 +205,7 @@ export async function runNamedHudAction(actor, key, importer = (path) => import(
 }
 
 export async function showUtilityInfo(actor, item) {
-  if (!actor?.isOwner || typeof item?.roll !== "function") {
+  if (!actor?.isOwner || item?.parent !== actor || typeof item?.roll !== "function") {
     ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
     return;
   }
@@ -244,6 +245,14 @@ export async function buildUtilityTooltipData(utility, enrich = (html) => (
 }
 
 export function createComponents(ARGON) {
+  class Essence20AccordionCategory extends ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory {
+    async activateListeners(element) {
+      await super.activateListeners(element);
+      const heading = element.querySelector(".feature-accordion-title");
+      if (heading) keyboardAction(heading, this.label, () => heading.click());
+    }
+  }
+
   class Essence20SkillButton extends ARGON.DRAWER.DrawerButton {
     async activateListeners(element) {
       await super.activateListeners(element);
@@ -311,7 +320,7 @@ export function createComponents(ARGON) {
       const categories = (context?.groups ?? []).flatMap((group) => {
         const buttons = group.actions.map((action) => new Essence20NamedActionButton(action));
         if (!buttons.length) return [];
-        return [new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory({
+        return [new Essence20AccordionCategory({
           label: game.i18n.localize(group.label), buttons
         })];
       });
@@ -348,6 +357,12 @@ export function createComponents(ARGON) {
 
     get hasTooltip() { return true; }
 
+    get icon() {
+      const icon = this.effect.img ?? this.item?.img;
+      return icon?.endsWith("/weapon_effect.svg")
+        ? "modules/enhancedcombathud-essence20/assets/weapon-sigil.svg" : icon;
+    }
+
     async getTooltipData() {
       const details = [
         { label: "ECHESSENCE20.Tooltips.Skill", value: escapeHtml(this.effect.skill ?? "—") },
@@ -370,7 +385,9 @@ export function createComponents(ARGON) {
 
     async activateListeners(element) {
       await super.activateListeners(element);
-      keyboardAction(element, this.label, (event) => this._onPreLeftClick(event));
+      const label = `${this.label}, ${this.effect.targets} ${game.i18n.localize(
+        "ECHESSENCE20.Tooltips.Targets")}`;
+      keyboardAction(element, label, (event) => this._onPreLeftClick(event));
     }
 
     get ranges() {
@@ -385,11 +402,20 @@ export function createComponents(ARGON) {
     }
 
     async _onLeftClick() {
-      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+      if (!this.actor.isOwner || this.item?.parent !== this.actor
+        || typeof this.item?.roll !== "function") {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
         return;
       }
       return this.item.roll({ rollType: "weaponEffect" });
+    }
+
+    async _onPreLeftClick(event) {
+      if (!this.actor.isOwner || this.item?.parent !== this.actor) {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+        return;
+      }
+      return super._onPreLeftClick(event);
     }
   }
 
@@ -416,6 +442,11 @@ export function createComponents(ARGON) {
     }
 
     get quantity() { return powerUsesRemaining(this.item?.system); }
+    get icon() {
+      const icon = this.item?.img;
+      return icon?.endsWith("/powers.svg")
+        ? "modules/enhancedcombathud-essence20/assets/power-sigil.svg" : icon;
+    }
     get hasTooltip() { return true; }
 
     async getTooltipData() {
@@ -458,11 +489,25 @@ export function createComponents(ARGON) {
 
     async activateListeners(element) {
       await super.activateListeners(element);
-      keyboardAction(element, this.label, (event) => this._onPreLeftClick(event));
+      const system = this.item?.system ?? {};
+      const remaining = powerUsesRemaining(system);
+      const cost = system.hasVariableCost
+        ? game.i18n.localize("ECHESSENCE20.Tooltips.Variable")
+        : (system.powerCost ?? 0);
+      const label = [
+        this.label,
+        game.i18n.localize(`ECHESSENCE20.Actions.PowerTypes.${this.power.actionType}`),
+        `${game.i18n.localize("ECHESSENCE20.Tooltips.Cost")}: ${cost}`,
+        remaining === null ? null
+          : `${game.i18n.localize("ECHESSENCE20.Tooltips.UsesRemaining")}: ${remaining}`,
+        game.i18n.localize(`ECHESSENCE20.Tooltips.${this._available ? "Available" : "Unavailable"}`)
+      ].filter(Boolean).join(", ");
+      keyboardAction(element, label, (event) => this._onPreLeftClick(event));
     }
 
     async _onLeftClick() {
-      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+      if (!this.actor.isOwner || this.item?.parent !== this.actor
+        || typeof this.item?.roll !== "function") {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
         return;
       }
@@ -470,11 +515,20 @@ export function createComponents(ARGON) {
     }
 
     async _onRightClick() {
-      if (!this.actor.isOwner || typeof this.item?.roll !== "function") {
+      if (!this.actor.isOwner || this.item?.parent !== this.actor
+        || typeof this.item?.roll !== "function") {
         ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
         return;
       }
       return this.item.roll({ rollType: "info" });
+    }
+
+    async _onPreLeftClick(event) {
+      if (!this.actor.isOwner || this.item?.parent !== this.actor) {
+        ui.notifications.warn(game.i18n.localize("ECHESSENCE20.Errors.NotOwner"));
+        return;
+      }
+      return super._onPreLeftClick(event);
     }
   }
 
@@ -485,6 +539,11 @@ export function createComponents(ARGON) {
     }
 
     get hasTooltip() { return true; }
+    get icon() {
+      const icon = this.item?.img;
+      return /(?:\/perk\.svg|\/hazard\.svg)$/.test(icon ?? "")
+        ? "modules/enhancedcombathud-essence20/assets/utility-sigil.svg" : icon;
+    }
 
     async activateListeners(element) {
       await super.activateListeners(element);
@@ -550,6 +609,7 @@ export function createComponents(ARGON) {
 
     async _renderInner(data) {
       await super._renderInner(data);
+      this.element.classList.toggle("essence20-morphed", Boolean(this.actor?.system?.isMorphed));
       const actorColor = this.actor?.system?.color;
       if (typeof actorColor === "string" && /^#[\da-f]{6}$/i.test(actorColor)) {
         this.element.style.setProperty("--ech20-actor-color", actorColor);
@@ -575,6 +635,13 @@ export function createComponents(ARGON) {
 
     get title() {
       return game.i18n.localize("ECHESSENCE20.Drawer.Title");
+    }
+
+    async activateListeners(element) {
+      await super.activateListeners(element);
+      for (const heading of element.querySelectorAll(".ability-toggle .ability-title")) {
+        keyboardAction(heading, heading.textContent.trim(), () => heading.click());
+      }
     }
 
     get categories() {
@@ -633,9 +700,11 @@ export function createComponents(ARGON) {
           { label: "ECHESSENCE20.Drawer.Tracking", align: "center" }
         ],
         buttons: ["movement", "standard", "free"].map((key) => new Essence20SkillButton([
-          { label: `ECHESSENCE20.Drawer.ActionTypes.${key}` },
+          { label: game.i18n.localize(`ECHESSENCE20.Drawer.ActionTypes.${key}`) },
           { label: String(data.actionEconomy[key]) },
-          { label: "ECHESSENCE20.Drawer.Advisory" }
+          { label: data.actionEconomy.shared && key !== "free"
+            ? game.i18n.localize("ECHESSENCE20.Drawer.Shared")
+            : game.i18n.localize("ECHESSENCE20.Drawer.Prepared") }
         ])),
         gridCols: "minmax(9rem, 1fr) 4rem 5rem"
       });
@@ -674,6 +743,11 @@ export function createComponents(ARGON) {
       return "icons/svg/aura.svg";
     }
 
+    async activateListeners(element) {
+      await super.activateListeners(element);
+      keyboardAction(element, this.label, () => this._onClick(new Event("click")));
+    }
+
     async _getPanel() {
       const data = new Essence20ActorAdapter(this.actor).normalize();
       const categories = POWER_ACTION_TYPES.flatMap((actionType) => {
@@ -681,7 +755,7 @@ export function createComponents(ARGON) {
           .filter((power) => power.actionType === actionType)
           .map((power) => new Essence20PowerButton(power));
         if (!buttons.length) return [];
-        return [new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory({
+        return [new Essence20AccordionCategory({
           label: game.i18n.localize(`ECHESSENCE20.Actions.PowerTypes.${actionType}`),
           buttons
         })];
@@ -714,7 +788,12 @@ export function createComponents(ARGON) {
     }
 
     get icon() {
-      return "icons/svg/item-bag.svg";
+      return "modules/enhancedcombathud-essence20/assets/utility-sigil.svg";
+    }
+
+    async activateListeners(element) {
+      await super.activateListeners(element);
+      keyboardAction(element, this.label, () => this._onClick(new Event("click")));
     }
 
     async _getPanel() {
@@ -724,7 +803,7 @@ export function createComponents(ARGON) {
           .filter((utility) => utility.type === type)
           .map((utility) => new Essence20UtilityButton(utility));
         if (!buttons.length) return [];
-        return [new ARGON.MAIN.BUTTON_PANELS.ACCORDION.AccordionPanelCategory({
+        return [new Essence20AccordionCategory({
           label: game.i18n.localize(`ECHESSENCE20.Actions.UtilityTypes.${type}`),
           buttons
         })];
