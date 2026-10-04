@@ -20,10 +20,12 @@ Story Point controls are intentionally excluded because a separate module remain
 
 ## Status
 
-The dev.23 preview adds prepared action budgets, native turn-action controls,
+The dev.24 preview adds prepared action budgets, native turn-action controls,
 keyboard access for HUD buttons, Power availability and daily-use display,
-and an original occult theme. The full 1.0 acceptance matrix remains in
-development. This version targets the 6.0.3 beta and needs live-world checks.
+and an original occult theme. Live testing covers HUD rendering, Power lists,
+action labels, and appearance settings. The full 1.0 acceptance matrix remains
+in development. This version targets the 6.0.3 beta and needs action checks
+on a disposable actor.
 
 The occult theme is the default. Client settings provide a plain theme,
 comfortable/compact spacing, panel opacity, glow, high contrast, reduced
@@ -32,6 +34,8 @@ controls overall size. For a 1080p-sized window, turn off Argon Core's
 **Auto Scale** and start around 0.7–0.8; Auto Scale uses a much smaller size.
 The vector seals in `assets/` were created for this module and use this
 repository's license.
+In the skill drawer, Flags uses ★ for specialization, E for Edge, and S for
+Snag.
 
 See [the implementation plan](docs/IMPLEMENTATION_PLAN.md) and
 [the Phase 0 spike](docs/PHASE_0_SPIKE.md). Development and release procedures

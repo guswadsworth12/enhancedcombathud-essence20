@@ -1,4 +1,43 @@
 /* Scoped to the Essence20 Argon adapter. No dependency files are changed. */
+html[data-ech-essence20-theme="plain"] .extended-combat-hud:has(.essence20-portrait-hud) {
+  --ech-portrait-base-background: #202a33;
+  --ech-portrait-base-border: #a3becb;
+  --ech-portrait-base-color: #f4f8fa;
+  --ech-mainAction-base-background: #202a33;
+  --ech-mainAction-background-color: #202a33;
+  --ech-mainAction-base-color: #f4f8fa;
+  --ech-mainAction-base-border: #a3becb;
+  --ech-mainAction-hover-background: #354b58;
+  --ech-mainAction-hover-color: #fff;
+  --ech-abilityMenu-background: #202a33;
+  --ech-abilityMenu-color: #f4f8fa;
+  --ech-abilityMenu-border: #a3becb;
+  --ech-abilityMenu-base-color: #f4f8fa;
+  color: #f4f8fa;
+  font-family: system-ui, sans-serif;
+}
+
+html[data-ech-essence20-theme="plain"] .extended-combat-hud :is(
+  .essence20-ability-menu, .essence20-actions-container, .features-container
+) {
+  color: #f4f8fa;
+  text-shadow: none;
+}
+
+html[data-ech-essence20-theme="plain"] .ech-tooltip :is(.ech-tooltip-header, .ech-tooltip-subtitle, .ech-tooltip-body) {
+  background: #202a33;
+  color: #f4f8fa;
+}
+
+html[data-ech-essence20-theme="plain"] .ech-tooltip .ech-tooltip-header h2 {
+  color: #f4f8fa;
+}
+
+html[data-ech-essence20-theme="plain"] .extended-combat-hud .essence20-ability-menu .ability {
+  background: #202a33;
+  color: #f4f8fa;
+}
+
 html[data-ech-essence20-theme="occult"] .extended-combat-hud:has(.essence20-portrait-hud) {
   --ech20-ink: #f7f0e2;
   --ech20-brass: #c9ad79;
@@ -158,6 +197,12 @@ html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-turn-act
 
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .essence20-utilities-container > .action-element {
   background-image: url("../assets/utility-sigil.svg") !important;
+}
+
+html[data-ech-essence20-theme="occult"] .extended-combat-hud .action-element-title {
+  background: linear-gradient(transparent, #0b0d14 55%);
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
 }
 
 html[data-ech-essence20-theme="occult"] .extended-combat-hud .movement-hud {

@@ -2,13 +2,13 @@
 
 Target: Foundry 14.368, Essence20 6.0.3-beta, Argon Core 5.0.1.
 
-| Workflow | dev.21 observation | Next check |
+| Workflow | Live observation | Next check |
 | --- | --- | --- |
-| Module enabled and HUD loads | Passed in the user's world; no module console error | Repeat on dev.23 |
-| NPC portrait, defenses, Essences, equipped weapon effects, Power and utility lists | Rendered for The Stitcher | Check labels and generic art in dev.23 |
+| Module enabled and HUD loads | dev.23 active in Module Management; HUD loads on The Stitcher without a module console error | Repeat after the next preview reload |
+| NPC portrait, defenses, Essences, equipped weapon effects, Power and utility lists | dev.23 renders The Stitcher, three weapon effects, three Powers, and utility sections; original sigils appear | Check player character and alternate item types |
 | Actor health | HUD 3/0 matches the beta actor sheet's 3/0 | Compare a test actor with a positive maximum |
-| Action allowance labels | Raw keys on dev.21; fixed in dev.23 source | Verify after reload |
-| Tooltip and settings | Weapon tooltip and appearance settings render | Check keyboard focus and high contrast |
+| Action allowance labels | dev.23 displays Actions per turn / Max / Rule, with Movement 1, Standard 1, Free 2 and System tracking | Check live costs during combat |
+| Tooltip and settings | dev.23 weapon tooltip, Power accordion, high contrast, plain, compact, and reduced-motion settings render and apply immediately | Recheck plain-theme contrast and skill-column label after next preview reload; check keyboard focus |
 | Skill and weapon rolls | Pending disposable actor | Compare chat result with actor sheet |
 | Initiative and combat turn actions | Pending disposable actor and combat | Check costs, disabled states and refunds |
 | Power activation and daily uses | Pending disposable actor | Compare resource changes with actor sheet |
